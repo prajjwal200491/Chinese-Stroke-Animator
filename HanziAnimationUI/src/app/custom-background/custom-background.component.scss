@@ -1,0 +1,18 @@
+.background{
+    background-color: white;
+}
+.wrapper{
+    border: 2px solid #0A0A0A;
+    width: 120px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    background-color: lemonchiffon;
+}
+.background-container{
+    display: flex;
+}

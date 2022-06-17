@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="column-left">
+  <div class="search-row">
+    <div class="search-bar">
+      <div class="form-group has-search">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="Animate stroke order" [(ngModel)]="chineseTxt"
+          (ngModelChange)="textChange($event)" maxlength="1">
+      </div>
+    </div>
+  </div>
+  <app-character [strokeSpeed]="strokeSpeed" [chineseTxt]="latestCharacter">
+    <app-character-decomposition></app-character-decomposition>
+  </app-character><br>
+  
+  <app-character-strokes [chineseTxt]="latestCharacter"></app-character-strokes> 
+  <label for="">Speed</label><br>
+  <input id='slider-speed' type="text" data-slider-min="1" data-slider-max="3" data-slider-step="1"
+    data-slider-value="1" />
+  </div>
+  <div class="column-right">
+    <div class="recently-typed">
+        <h5>Recently typed words</h5>
+        <hr>
+        <span *ngFor="let character of recentlyTyped$ | async" (click)="onClick(character)">
+          {{character}}&nbsp;
+        </span>
+      </div>
+      <app-character-list></app-character-list>
+      <div class="more-list">
+        <button [routerLink]="['/lists']" class="btn btn-primary"> More List...</button>
+      </div>
+  </div>
+</div>
+<div id='test'></div>

@@ -1,0 +1,17 @@
+.decomposition{
+    cursor: pointer;
+}
+.decomposition:hover{
+    font-weight: bold;
+}
+.related-words-flex{
+    display: flex;
+    &>h6{
+        font-size: medium;
+    }
+    &>.words{
+        margin-left: 5px;
+        width: 13rem;
+        margin-top: -1px;
+    }
+}

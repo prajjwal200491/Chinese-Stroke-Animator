@@ -1,0 +1,23 @@
+.custom-list{
+    margin-top: 1.5rem;
+    &>h6{
+        float: left;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    &>.btn{
+        font-weight: bold;
+        margin-left: 53%;
+        margin-bottom: 5px;
+    }
+    & hr{
+        margin-top: 0;
+        margin-bottom: 0;
+        border-top: 2px solid rgba(0, 0, 0, 0.1);
+    }
+    & .custom-list-wrapper{
+        float: left;
+        margin-right: 6%;
+        margin-top: 4%;
+    }
+}

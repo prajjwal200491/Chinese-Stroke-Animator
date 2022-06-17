@@ -1,0 +1,12 @@
+<app-modal [modalId]="'customlist'+list.name" [header]="modalHeader" [list]="list" [disabled]="true"></app-modal>
+<div class="custom-list" >
+    <label for="" data-toggle="modal" [attr.data-target]="'#customlist'+list.name">+{{list.name}}</label>
+    <div class="list"  [ngClass]="{'transform-list':list.selected}">
+        <span class="character" [ngClass]="{'font-bold':c.active}" *ngFor="let c of list.characters.slice(0,19)" (click)="onClick(c)">{{c.value}}</span>
+        <span [ngbPopover]="popContent" popoverClass="popover-characters" placement="right" class="character"
+            *ngIf="list.characters.length>19"><i class="bi bi-three-dots"></i></span>
+    </div>
+</div>
+    <ng-template #popContent>
+        <span class="character" *ngFor="let c of list.characters.slice(19)" >{{c.value}}</span>
+    </ng-template>

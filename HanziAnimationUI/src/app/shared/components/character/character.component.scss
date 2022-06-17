@@ -1,0 +1,44 @@
+.action-buttons{
+    margin-bottom: .5rem;
+    padding-left: 1rem;
+    display: flex;
+    & .bi-play-circle-fill,.bi-pause-circle-fill{
+        font-size: 1.7rem;
+        line-height: 1.7rem;
+        align-self: center;
+        cursor: pointer;
+    }
+}
+.character-container{
+    background-color:#00BFFF;
+    width: 300px;
+    & #character-target-div{
+        text-align: center;
+    }
+}
+.background{
+    background-color: white;
+}
+.wrapper{
+    border: 2px solid #0A0A0A;
+    width: 120px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    background-color: lemonchiffon;
+    cursor: pointer;
+    &:hover{
+        background-color: yellow;
+    }
+    
+}
+.background-container{
+    display: flex;
+}
+.hide-element{
+    display: none;
+}

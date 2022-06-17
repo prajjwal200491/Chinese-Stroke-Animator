@@ -1,0 +1,61 @@
+.container{
+    background-color: #fff;
+    margin-top: 0.5rem;
+    display: flex;
+    & .search-row{
+        display: flex;
+        & .search-bar{
+            width: 100%;
+            max-width: 302px;
+            & .has-search .form-control{
+                padding-left: 2.375rem;
+            }
+            & .has-search .bi-search{
+                position: absolute;
+                z-index: 2;
+                display: block;
+                width: 2.375rem;
+                height: 2.375rem;
+                line-height: 2.375rem;
+                text-align: center;
+                pointer-events: none;
+                color: #aaa;
+            }
+        }
+        
+    }
+    
+    & .column-right{
+        display: flex;
+        flex-direction: column;
+        & .recently-typed{
+            /* margin-left: 10rem; */
+            & hr{
+                margin-top: 0;
+                margin-bottom: 0;
+                border-top: 2px solid rgba(0, 0, 0, 0.1);
+            }
+            & span{
+                cursor: pointer;
+            }
+            & span:hover{
+                font-weight: bold;
+            }
+        }
+        & .more-list{
+            margin-top: 40px;
+            margin-bottom: 40px;
+            &>button{
+                width: 70%;
+                background: #007bff;
+                padding: 14px;
+                font-size: larger;
+                text-align: left;
+                border-radius: 20px;
+                font-weight: 600;
+            }
+        }
+    }
+    
+}
+
