@@ -1,0 +1,78 @@
+diff --git a/node_modules/hanzi-writer/dist/hanzi-writer.js b/node_modules/hanzi-writer/dist/hanzi-writer.js
+index c32b07a..c9cb174 100644
+--- a/node_modules/hanzi-writer/dist/hanzi-writer.js
++++ b/node_modules/hanzi-writer/dist/hanzi-writer.js
+@@ -1103,6 +1103,27 @@ var HanziWriter = (function () {
+     });
+     return mutations;
+   };
++  const backAnimateCharacter = (charName, character, fadeDuration, speed, delayBetweenStrokes) => {
++    let mutations = hideCharacter(charName, character, fadeDuration);
++    mutations = mutations.concat(showStrokes(charName, character, 0));
++    mutations.push(new Mutation(`character.${charName}`, {
++      opacity: 1,
++      strokes: objRepeat({
++        opacity: 0
++      }, character.strokes.length)
++    }, {
++      force: true
++    }));
++    // character.strokes.forEach((stroke, i) => {
++    //   if (i > 0) mutations.push(new Mutation.Delay(delayBetweenStrokes));
++    //   mutations = mutations.concat(animateStroke(charName, stroke, speed));
++    // });
++    for(var i=character.strokes.length-1;i>0;i--){
++      mutations.push(new Mutation.Delay(delayBetweenStrokes));
++      mutations = mutations.concat(animateStroke(charName, stroke, speed));
++    }
++    return mutations;
++  };
+   const animateCharacterLoop = (charName, character, fadeDuration, speed, delayBetweenStrokes, delayBetweenLoops) => {
+     const mutations = animateCharacter(charName, character, fadeDuration, speed, delayBetweenStrokes);
+     mutations.push(new Mutation.Delay(delayBetweenLoops));
+@@ -2411,6 +2432,20 @@ var HanziWriter = (function () {
+       });
+     }
+ 
++    backAnimateCharacter(options = {}) {
++      this.cancelQuiz();
++      return this._withData(() => {
++        var _this$_renderState3;
++
++        return (_this$_renderState3 = this._renderState) === null || _this$_renderState3 === void 0 ? void 0 : _this$_renderState3.run(backAnimateCharacter('main', this._character, this._options.strokeFadeDuration, this._options.strokeAnimationSpeed, this._options.delayBetweenStrokes)).then(res => {
++          var _options$onComplete3;
++
++          (_options$onComplete3 = options.onComplete) === null || _options$onComplete3 === void 0 ? void 0 : _options$onComplete3.call(options, res);
++          return res;
++        });
++      });
++    }
++
+     animateStroke(strokeNum, options = {}) {
+       this.cancelQuiz();
+       return this._withData(() => {
+diff --git a/node_modules/hanzi-writer/dist/types/index.esm.d.ts b/node_modules/hanzi-writer/dist/types/index.esm.d.ts
+index f3996df..7a026da 100644
+--- a/node_modules/hanzi-writer/dist/types/index.esm.d.ts
++++ b/node_modules/hanzi-writer/dist/types/index.esm.d.ts
+@@ -307,7 +307,7 @@ declare class Quiz {
+     }): StrokeData;
+     _handleSuccess(meta: StrokeMatchResultMeta): void;
+     _handleFailure(meta: StrokeMatchResultMeta): void;
+-    _getCurrentStroke(): default;
++    _getCurrentStroke(): number;
+ }
+ type CustomError = Error & {
+     reason: string;
+@@ -380,6 +380,11 @@ declare class HanziWriter {
+     }): Promise<Promise<{
+         canceled: boolean;
+     }> | undefined>;
++    backAnimateCharacter(options?: {
++        onComplete?: OnCompleteFunction;
++    }): Promise<Promise<{
++        canceled: boolean;
++    }> | undefined>;
+     animateStroke(strokeNum: number, options?: {
+         onComplete?: OnCompleteFunction;
+     }): Promise<Promise<{
