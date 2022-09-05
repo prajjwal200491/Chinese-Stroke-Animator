@@ -3,10 +3,9 @@ import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { Observable, of } from 'rxjs';
 import { CharacterService } from '../character.service';
-import { loadCharacter, searchCharacter, updateCharacter } from '../state/app.actions';
+import { loadCharacter, loadWordsList, searchCharacter, updateCharacter } from '../state/app.actions';
 import { selectLatestCharacter, selectRecentlyTypedCharacters } from '../state/app.selector';
 import { AppState } from '../state/app.state';
-declare const Slider: any;
 
 @Component({
   selector: 'app-main-page',
@@ -16,30 +15,37 @@ declare const Slider: any;
 export class MainPageComponent implements OnInit {
   writer!: HanziWriter;
   slider: any;
-  strokeSpeed!: number;
   isPaused: boolean = true;
   playing: boolean = false;
   chineseTxt:string='開';
   recentlyTyped$!: Observable<string[]>;
   latestCharacter!:string;
+  groupCharacters!:string[];
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService) {
    }
 
   ngOnInit(): void {
-    this.strokeSpeed = 0.25;
-    this.slider = new Slider('#slider-speed');
-    this.slider.on("change", (sliderValue: any) => {
-      this.strokeSpeed = sliderValue.newValue*0.25;
-    })
+    //this.characterService.test().subscribe((res)=> console.log(res));
     this.recentlyTyped$ = this.store.select(selectRecentlyTypedCharacters);
-    this.store.select(selectLatestCharacter).subscribe(c=> this.latestCharacter=c);
+    this.store.select(selectLatestCharacter).subscribe(c=> {
+      if(c.length>1){
+        this.latestCharacter='';
+        this.groupCharacters=c.split('');
+      }
+      else{
+        this.groupCharacters=[];
+      this.latestCharacter=c;
+      }
+    });
+    this.characterService.getHanziWriter().subscribe(w=> this.writer=w);
   }
   textChange(e: any){
     this.store.dispatch(searchCharacter({search: e}));
   }
   onClick(character: string){
-    this.characterService.destroyCharacter();
+    this.characterService.destroyCharacter(this.writer);
     this.store.dispatch(updateCharacter({character: character}))
   }
+
 
 }

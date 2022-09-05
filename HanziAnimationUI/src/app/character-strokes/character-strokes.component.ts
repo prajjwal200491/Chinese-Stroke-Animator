@@ -49,12 +49,12 @@ export class CharacterStrokesComponent implements OnInit, OnChanges, OnDestroy {
 
   private renderFanningStrokes(target: any, strokes: any[]): void {
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.style.width = '75px';
-    svg.style.height = '75px';
+    svg.style.width = '50px';
+    svg.style.height = '50px';
     svg.style.border = '2px solid #00BFFF';
     target.appendChild(svg);
     let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    let transformData = HanziWriter.getScalingTransform(75, 75);
+    let transformData = HanziWriter.getScalingTransform(50, 50);
     group.setAttributeNS(null, 'transform', transformData.transform);
     svg.appendChild(group);
     strokes.forEach(function (strokePath: string) {

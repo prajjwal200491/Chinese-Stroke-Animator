@@ -6,9 +6,21 @@ export interface AppState{
     recentlyTyped: string[];
     decomposition: string;
     writer?: HanziWriter;
+    groupWriters: string[];
     character: string;
     list: List[];
-    relatedWords: string
+    listIds: string[];
+    testList: List[];
+    relatedWords: string;
+    groupCharactersDecomposition: GroupCharacter[];
+    groupCharactersRelatedWords: GroupCharacter[];
 }
+
+export interface GroupCharacter{
+    character?:string;
+    decomposition?: string;
+    relatedWords?: string;
+}
+export type Decomposition={character: string; decomposed: string}
 
 export const selectAppState = createFeatureSelector<AppState>('character');

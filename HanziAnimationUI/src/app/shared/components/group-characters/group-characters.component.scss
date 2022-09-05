@@ -1,3 +1,13 @@
+.display-flex{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.character-container{
+    background-color:#00BFFF;
+    width: 300px;
+    margin-bottom: 1rem;
+}
 .action-buttons{
     margin-bottom: .5rem;
     display: flex;
@@ -12,12 +22,9 @@
         align-self: center;
         cursor: pointer;
     }
-}
-.character-container{
-    background-color:#00BFFF;
-    width: 300px;
-    & #character-target-div{
-        text-align: center;
+    & .bi-arrow-left-circle-fill{
+        font-size: 20px;
+        cursor: pointer;
     }
 }
 .background{
@@ -31,7 +38,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 25px;
-    margin-top: 1rem;
+    //margin-top: 1rem;
     margin-right: 1rem;
     background-color: lemonchiffon;
     cursor: pointer;
@@ -40,20 +47,15 @@
     }
     
 }
+.hide-element{
+    display: none;
+}
 .background-container{
     display: flex;
     background: white;
 }
-.hide-element{
-    display: none;
-}
 
-.bi-arrow-left-circle-fill{
-    font-size: 20px;
+.bi-plus-square-fill{
+    font-size: 25px;
     cursor: pointer;
-}
-
-::ng-deep .slider.slider-horizontal{
-    width: 150px;
-    margin-left: 1rem;
 }

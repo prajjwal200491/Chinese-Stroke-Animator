@@ -20,6 +20,10 @@ import { CharacterListComponent } from './character-list/character-list.componen
 import { CustomListComponent } from './shared/components/custom-list/custom-list.component';
 import { ModalComponent } from './shared/components/modal/modal.component';
 import { ContentListViewComponent } from './shared/content-list-view/content-list-view.component';
+import { GroupCharactersComponent } from './shared/components/group-characters/group-characters.component';
+import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import { environment } from '../environments/environment';
+import { provideDatabase,getDatabase } from '@angular/fire/database';
 
 @NgModule({
   declarations: [
@@ -33,7 +37,8 @@ import { ContentListViewComponent } from './shared/content-list-view/content-lis
     CharacterListComponent,
     CustomListComponent,
     ModalComponent,
-    ContentListViewComponent
+    ContentListViewComponent,
+    GroupCharactersComponent
   ],
   imports: [
     BrowserModule,
@@ -48,6 +53,8 @@ import { ContentListViewComponent } from './shared/content-list-view/content-lis
       autoPause: true, // Pauses recording actions and state changes when the extension window is not open
     }),
     EffectsModule.forRoot([AppEffects]),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideDatabase(() => getDatabase()),
   ],
   providers: [],
   bootstrap: [AppComponent]

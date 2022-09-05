@@ -1,0 +1,26 @@
+.pill-container{
+    display: flex;
+    width: 23rem;
+    flex-wrap: wrap;
+    height: 8rem;
+    overflow-y: auto;
+    & .btn:focus{
+        box-shadow: none !important
+    }
+}
+
+.bi-dash-lg:hover{
+    font-size: small;
+}
+.word-pill{
+    border: 1px solid gainsboro;
+    border-radius: 29%;
+    margin-left: 1rem;
+    background: gainsboro;
+    margin-bottom: 0.5rem;
+    height: 2.2rem;
+    & .bi-dash-lg{
+        border-left: 1px solid gainsboro;
+        -webkit-text-stroke: 2px;
+    }
+}

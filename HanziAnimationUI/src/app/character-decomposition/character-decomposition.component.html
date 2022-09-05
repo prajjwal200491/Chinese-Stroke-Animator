@@ -1,6 +1,6 @@
- <h5>Decomposition: <span class="decomposition" (click)="onClick(d)" *ngFor="let d of decomposition">{{d}} </span></h5>
+ <div ><span class="text">Decomposition:</span>  <span class="decomposition" (click)="onClick(d)" *ngFor="let d of decomposition">{{d}} </span></div>
  <div class="related-words-flex">
-    <h6>Related Words:</h6>
+    <span class="text">Related Words:</span>
     <span class="words">{{relatedWords$ | async}} </span>
  </div>
  

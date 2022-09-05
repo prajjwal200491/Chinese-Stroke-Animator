@@ -1,3 +1,4 @@
+<app-modal [modalId]="'listModalContentView'" [header]="'Create'"></app-modal>
 <div class="container">
 <div class="row">
     <i class="bi bi-arrow-left" (click)="goBack()"></i>
@@ -8,13 +9,13 @@
                 <div class="search-bar">
                     <div class="form-group has-search">
                         <i class="bi bi-search"></i>
-                        <input type="text" class="form-control" placeholder="Search Lists By Name">
+                        <input [(ngModel)]="listName" (ngModelChange)="onListSearch()" type="text" class="form-control" placeholder="Search Lists By Name">
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-6">
-            <button class="btn">+New List</button>
+            <button class="btn" data-toggle="modal" data-target="#listModalContentView">+New List</button>
         </div>
     </div>
     <div class="row">

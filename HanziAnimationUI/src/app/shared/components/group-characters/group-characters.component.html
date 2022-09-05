@@ -1,0 +1,92 @@
+<div class="display-flex">
+<ng-container *ngFor="let character of characters; let i=index">
+    <div class="wrapper-character">
+    <ng-container *ngTemplateOutlet="action; context: {index: i, character: character}"></ng-container>
+    <div class="character-container">
+        <div #main id="{{'character-target-'+i}}" [ngClass]="{'hide-element':toggleBackground[i].initial!=='initial'}"></div>
+        <div  [ngClass]="{'hide-element':toggleBackground[i].triangle!=='triangle'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" id="{{'grid-triangle-'+i}}">
+                <line x1="0" y1="0" x2="300" y2="0" stroke="#DDD" />
+                <line x1="0" y1="0" x2="0" y2="300" stroke="#DDD" />
+                <line x1="0" y1="0" x2="300" y2="300" stroke="#DDD" />
+                <line x1="0" y1="300" x2="300" y2="300" stroke="#DDD" />
+                <line x1="300" y1="0" x2="300" y2="300" stroke="#DDD" />
+                <line x1="300" y1="0" x2="0" y2="300" stroke="#DDD" />
+                <line x1="150" y1="0" x2="150" y2="300" stroke="#DDD" />
+                <line x1="0" y1="150" x2="300" y2="150" stroke="#DDD" />
+            </svg>
+        </div>
+        <div [ngClass]="{'hide-element':toggleBackground[i].square!=='square'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" id="{{'grid-square-'+i}}">
+                <line x1="0" y1="0" x2="300" y2="0" stroke="#DDD" />
+                <line x1="0" y1="0" x2="0" y2="300" stroke="#DDD" />
+                <line x1="0" y1="300" x2="300" y2="300" stroke="#DDD" />
+                <line x1="300" y1="0" x2="300" y2="300" stroke="#DDD" />
+                <line x1="0" y1="100" x2="300" y2="100" stroke="#DDD" />
+                <line x1="0" y1="200" x2="300" y2="200" stroke="#DDD" />
+                <line x1="100" y1="0" x2="100" y2="300" stroke="#DDD" />
+                <line x1="200" y1="0" x2="200" y2="300" stroke="#DDD" />
+            </svg>
+        </div>
+    <i class="bi bi-plus-square-fill" data-toggle="collapse" [attr.data-target]="'#multiCollapse'+i"></i>
+    </div>
+    <span id="{{'multiCollapse'+i}}" class="collapse multi-collapse">
+    <ng-container *ngTemplateOutlet="customBackground; context:{index: i}"></ng-container>
+    <app-character-decomposition [character]="character"></app-character-decomposition>
+    <app-character-strokes [chineseTxt]="character"></app-character-strokes>
+</span>
+</div>
+</ng-container>
+</div>
+
+<ng-template #action let-index="index" let-character="character">
+<div class="action-buttons">
+    <i (click)="back(index)" class="bi bi-arrow-left-circle-fill" *ngIf="animating[index]"></i>
+    <div class="start-btn">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="onAnimate(index)">Start</button>
+        <span (click)="toggleButton(index)">
+        <span *ngIf="animating[index]"><i class="bi bi-play-circle-fill"  *ngIf = "!playPause[index]" (click)="play(index)"></i></span>
+        <i class="bi bi-pause-circle-fill" *ngIf = "playPause[index]" (click)="pause(index)"></i>
+    </span>
+    </div>
+    <input #range type="range" id="{{'slider-speed-'+index}}" min="1" max="3" [(ngModel)]="strokeValues[index]" (ngModelChange)="onSlide(index, range.value)">
+</div>
+</ng-template>
+
+<!-- custom backgrounds -->
+<ng-template #customBackground let-index="index">
+    <div class="background-container">
+        <div class="wrapper">
+            <div class="background">
+                <a (click)="changeBackground('grid-triangle-', index)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" id="{{'grid-background-triangle-'+index}}">
+                        <line x1="0" y1="0" x2="25" y2="0" stroke="#0A0A0A" />
+                        <line x1="0" y1="0" x2="0" y2="25" stroke="#0A0A0A" />
+                        <line x1="0" y1="0" x2="25" y2="25" stroke="#0A0A0A" />
+                        <line x1="0" y1="25" x2="25" y2="25" stroke="#0A0A0A" />
+                        <line x1="25" y1="0" x2="25" y2="25" stroke="#0A0A0A" />
+                        <line x1="25" y1="0" x2="0" y2="25" stroke="#0A0A0A" />
+                        <line x1="12.5" y1="0" x2="12.5" y2="25" stroke="#0A0A0A" />
+                        <line x1="0" y1="12.5" x2="50" y2="12.5" stroke="#0A0A0A" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="background" grid-square>
+                <a (click)="changeBackground('grid-square-', index)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" id="{{'grid-background-square-'+index}}">
+                        <line x1="0" y1="0" x2="25" y2="0" stroke="#0A0A0A" />
+                        <line x1="0" y1="0" x2="0" y2="25" stroke="#0A0A0A" />
+                        <line x1="0" y1="25" x2="25" y2="25" stroke="#0A0A0A" />
+                        <line x1="25" y1="0" x2="25" y2="25" stroke="#0A0A0A" />
+                        <line x1="0" y1="7.5" x2="25" y2="7.5" stroke="#0A0A0A" />
+                        <line x1="0" y1="17.5" x2="25" y2="17.5" stroke="#0A0A0A" />
+                        <line x1="7.5" y1="0" x2="7.5" y2="25" stroke="#0A0A0A" />
+                        <line x1="17.5" y1="0" x2="17.5" y2="25" stroke="#0A0A0A" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</ng-template>

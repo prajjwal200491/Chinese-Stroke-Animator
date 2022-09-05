@@ -1,9 +1,13 @@
 <app-modal [modalId]="'listModal'" [header]="modalHeader"></app-modal>
 <div class="custom-list">
-    <h6>Lists</h6>
-    <button class="btn" data-toggle="modal" data-target="#listModal">+New List</button>
+    <div class="sticky-header">
+        <h6>Lists</h6>
+        <button class="btn" data-toggle="modal" data-target="#listModal">+New List</button>
+    </div>
     <hr>
+    <div class="scrollable-body" #list>
     <div *ngFor="let list of customList$ | async" class="custom-list-wrapper">
         <app-custom-list [list]="list" (moveList)="reschuffleList($event)"></app-custom-list>
     </div>
+</div>
 </div>

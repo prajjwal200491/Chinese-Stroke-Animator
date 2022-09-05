@@ -2,28 +2,86 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { loadCharacter, loadCharacterDecomposition, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, reschuffleList, saveReschuffledList, setActiveCharacterList, loadRelatedWords, loadRelatedWordsEnded } from "./app.actions";
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { AppState } from "./app.state";
+import { loadCharacter, loadCharacterDecomposition, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, reschuffleList, saveReschuffledList, loadWordsList, loadRelatedWords, loadRelatedWordsEnded, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, addWordList, updateWordList } from "./app.actions";
+import { flatMap, map, mergeMap, switchMap, tap, withLatestFrom, first } from 'rxjs/operators';
+import { AppState, Decomposition, GroupCharacter } from "./app.state";
 import { selectLatestCharacter, selectCustomListData } from "./app.selector";
 import { CharacterService } from "../character.service";
 import { Character, List } from "./app.model";
+import HanziWriter from "hanzi-writer";
+import { of } from "rxjs";
+import { ref } from "@angular/fire/database";
 
 
 @Injectable()
 export class AppEffects {
-
+    writer!:string;
+    group:boolean=false;
     loadCharacter$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(loadCharacter),
-            map(({ id, text, properties }) => {
-                return this.characterService.loadCharacter(id, text, properties)
+            withLatestFrom(this.store$.select(selectLatestCharacter)),
+            tap(([{ id, text, properties }, latestCharacter]) => {
+                this.group= latestCharacter.length>1
+                const writer=this.characterService.loadCharacter(id, text, properties);
+                this.writer= JSON.stringify(writer);
+                return writer;
+            }),
+            map(()=> {
+                
+                return loadCharacterEnded({writer: this.writer, isGroup: this.group})
             })
         )
     },
-        { dispatch: false });
+     );
 
-        reschuffleList$ = createEffect(() => {
+    loadWordsList$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(loadWordsList),
+            mergeMap(()=> this.characterService.getList().pipe(
+                map(lists=>{
+                    return loadWordsListEnded({lists: Object.values(lists), listIds: Object.keys(lists)});
+                })
+            ))
+        )
+    }
+     );
+
+     addWordList$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(addWordList),
+            switchMap(({list})=> this.characterService.saveList(list).pipe(
+                map(()=> loadWordsList())
+            )
+            )
+        )
+    }
+     );
+
+     updateWordList$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(updateWordList),
+            switchMap(({list})=> this.characterService.updateList(list).pipe(
+                map(()=> loadWordsList())
+            )
+            )
+        )
+    }
+     );
+
+    //  updateWordList$ = createEffect(() => {
+    //     return this.actions$.pipe(
+    //         ofType(updateWordList),
+    //         withLatestFrom(this.store$.select(selectCustomListData)),
+    //         mergeMap(([{list},allLists])=> this.characterService.saveList(list).pipe(
+    //             map(()=> loadWordsList())
+    //         ))
+    //     )
+    // }
+    //  );
+
+        
+    reschuffleList$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(reschuffleList),
             withLatestFrom(this.store$.select(selectCustomListData)),
@@ -51,7 +109,7 @@ export class AppEffects {
         return this.actions$.pipe(
             ofType(updateCharacter),
             map(({ character }) => {
-                this.characterService.updateCharacter(character)
+                return character.length===1 && this.characterService.updateCharacter(character)
             })
         )
     },
@@ -63,8 +121,19 @@ export class AppEffects {
             withLatestFrom(this.store$.select(selectLatestCharacter)),
             switchMap(([, latest]) => this.http.get("assets/dictionary.json").pipe(
                 map((res: any) => {
-                    let character = res.dictionary.find((d: any) => d.character === latest);
-                    return loadCharacterDecompositionEnded({ decomposition: character.decomposition })
+                    if(latest.length>1){
+                        let groupChar: GroupCharacter[]=[];
+                        latest.split('').forEach((item:string)=>{
+                           let d= res.dictionary.find((d: any) => d.character === item);
+                           groupChar.push({character: item, decomposition: d.decomposition})
+                        })
+                        return saveGroupDecomposition({group: groupChar})
+                    }
+                    else{
+                        let result = res.dictionary.find((d: any) => d.character === latest);
+                        return loadCharacterDecompositionEnded({ decomposition: result.decomposition });
+                    }
+                    
                 })
             ))
         );
@@ -76,8 +145,19 @@ export class AppEffects {
             withLatestFrom(this.store$.select(selectLatestCharacter)),
             switchMap(([, latest]) => this.http.get("assets/dictionary.json").pipe(
                 map((res: any) => {
-                    let character = res.dictionary.find((d: any) => d.character === latest);
-                    return loadRelatedWordsEnded({ relatedWords: character.definition })
+                    if(latest.length>1){
+                        let groupChar: GroupCharacter[]=[];
+                        latest.split('').forEach((item:string)=>{
+                           let d= res.dictionary.find((d: any) => d.character === item);
+                           groupChar.push({character: item, relatedWords: d.definition})
+                        })
+                        return saveGroupRelatedWords({group: groupChar})
+                    }
+                    else{
+                        let result = res.dictionary.find((d: any) => d.character === latest);
+                        return loadRelatedWordsEnded({ relatedWords: result.definition });
+                    }
+                    
                 })
             ))
         );
@@ -87,7 +167,7 @@ export class AppEffects {
     refresh$ = createEffect(() => {
         return this.actions$.pipe(
             ofType(searchCharacter, updateCharacter),
-            map(() => loadCharacterDecomposition())
+            map(() => loadCharacterDecomposition({}))
         )
     });
 

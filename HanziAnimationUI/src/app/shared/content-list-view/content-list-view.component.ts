@@ -16,11 +16,18 @@ import { AppState } from 'src/app/state/app.state';
 export class ContentListViewComponent implements OnInit {
   customList$!: Observable<List[]>;
   modalHeader: string = 'Create';
+  listName: string='';
 
   constructor(private readonly store: Store<AppState>, private readonly location: Location) { }
 
   ngOnInit(): void {
     this.customList$ = this.store.select(selectCustomListData);
+  }
+
+  onListSearch():void{
+      this.customList$=this.customList$.pipe(
+        map(list=> list.filter(item=> item.name.includes(this.listName)))
+      )
   }
 
   goBack(){
