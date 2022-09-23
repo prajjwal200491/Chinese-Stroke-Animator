@@ -13,8 +13,7 @@ export class AppComponent implements OnInit {
   constructor(private readonly store: Store<AppState>) {}
 
   ngOnInit(){
-    this.store.dispatch(loadWordsList());
-    
+    this.store.dispatch(loadWordsList());    
   }
 
   
