@@ -58,7 +58,7 @@ jobs:
         uses: actions/download-artifact@main
         with:
          name: build
-         path: HanziAnimationUI/build
+         path: HanziAnimationUI/dist
       - name: Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@main
         with:
