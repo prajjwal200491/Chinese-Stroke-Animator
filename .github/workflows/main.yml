@@ -35,6 +35,7 @@ jobs:
         working-directory: HanziAnimationUI
       - name: Build dependencies
         run: npm run build
+        working-directory: HanziAnimationUI
       - name: Archive production artifact
         uses: actions/upload-artifact@main
         with: 
