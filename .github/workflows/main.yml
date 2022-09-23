@@ -32,7 +32,7 @@ jobs:
          node-version: '14.x'
       - name: Install dependencies
         run: npm ci
-        working-directory: HanziAnimation
+        working-directory: HanziAnimationUI
       - name: Build dependencies
         run: npm run build
       - name: Archive production artifact
