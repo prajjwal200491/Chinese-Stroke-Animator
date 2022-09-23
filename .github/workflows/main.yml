@@ -40,11 +40,14 @@ jobs:
         uses: actions/upload-artifact@main
         with: 
           name: dist
-          path: dist/HanziAnimationUI
+          path: dist
   deploy: 
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: HanziAnimationUI
     steps:
       - name: Checkout Repository
         uses: actions/checkout@main
@@ -52,7 +55,7 @@ jobs:
         uses: actions/download-artifact@main
         with:
          name: dist
-         path: dist/HanziAnimationUI
+         path: dist
       - name: Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@main
         with:
