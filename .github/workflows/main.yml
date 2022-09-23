@@ -62,6 +62,7 @@ jobs:
       - name: Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@main
         with:
+          entrypoint: /HanziAnimationUI
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FIR_TEST_APPLICATION_D5087 }}'
           channelId: live
