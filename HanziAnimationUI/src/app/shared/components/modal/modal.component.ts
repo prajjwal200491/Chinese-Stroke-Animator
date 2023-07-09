@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { CharacterService } from 'src/app/character.service';
-import { addNewList, addWordList, loadWordsList, updateList, updateWordList } from 'src/app/state/app.actions';
+import { addNewList, addWordList, loadWordsList, reschuffleList, updateList, updateWordList } from 'src/app/state/app.actions';
 import { List } from 'src/app/state/app.model';
 import { AppState } from 'src/app/state/app.state';
 import {Character} from '../../../state/app.model'
@@ -62,7 +62,7 @@ export class ModalComponent implements OnInit {
         this.wordList.push(character);
       }
       else{
-        this.wordList=[...this.list.characters, character]
+        this.wordList=[...this.wordList, character]
       }
       
     }
@@ -79,6 +79,7 @@ export class ModalComponent implements OnInit {
         selected: false
       }
       this.store.dispatch(addWordList({list: final}));
+      //this.store.dispatch(reschuffleList({list:final}));
     }
     else{
       const final: List = {
@@ -86,8 +87,8 @@ export class ModalComponent implements OnInit {
         characters: this.wordList,
       }
       this.store.dispatch(updateWordList({list: final}));
+      //this.store.dispatch(reschuffleList({list:final}));
     }
-
   }
 
 }

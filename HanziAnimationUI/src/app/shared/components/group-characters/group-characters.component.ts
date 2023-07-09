@@ -1,8 +1,8 @@
-import { AfterViewChecked, AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { CharacterService } from 'src/app/character.service';
-import { loadCharacter, resetGroupWriter } from 'src/app/state/app.actions';
+import { resetGroupWriter } from 'src/app/state/app.actions';
 import { AppState } from 'src/app/state/app.state';
 
 @Component({
@@ -24,10 +24,23 @@ export class GroupCharactersComponent implements OnInit, AfterViewInit, OnChange
   animating:any[]=[];
 
   @Input() characters: string[]=[];
+  @ViewChild('main') mainElement!: ElementRef;
 
   constructor(private readonly store$: Store<AppState>, private readonly characterService: CharacterService) { }
   ngAfterViewChecked(): void {
     if(this.check===0 && this.characters.length>1){
+      // if(this.groupWriters.length===0){
+      //   const mainNodes = this.mainElement.nativeElement.querySelectorAll('.wrapper-character');
+      //   if(mainNodes.length>0){
+      //     mainNodes.forEach((node:any, index:number)=>{
+      //       const id = 'character-target-'+index;
+      //       let svg = node.querySelector('#character-target-0>svg');
+      //       if(svg!==null){
+      //         node.removeChild(svg);
+      //       }
+      //     })
+      //   }
+      // }
       this.characters.forEach((item, index)=>{
         const writer=this.createHanziAnimation(item, index);
         this.groupWriters.push(writer);
@@ -126,6 +139,7 @@ toggleButton(index: number){
 
 
   private createHanziAnimation(character: string, index: number): HanziWriter{
+    
     const id=this.background+index;
     let properties = {
       width: 300,
@@ -137,7 +151,9 @@ toggleButton(index: number){
       radicalColor: '#DC143C',
       delayBetweenLoops: 1000
     };
-    //this.store$.dispatch(loadCharacter({id: id, text: character, properties: properties}))
+    // if(svgNodes.length>0 && this.mainElement.nativeElement.id.includes(id)){
+    //   return;
+    // }
     return HanziWriter.create(id, character, properties);
 
   }

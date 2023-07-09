@@ -27,6 +27,7 @@ export class CharacterComponent implements OnInit, OnChanges {
     this.characterService.startAnimation(this.writer);
     this.playing=true;
   }
+  
   ngOnChanges(sc: SimpleChanges):void{
     if(sc.chineseTxt && sc.chineseTxt.currentValue!==sc.chineseTxt.previousValue && this.chineseTxt!==''){
       this.store$.dispatch(updateCharacter({character: this.chineseTxt}));

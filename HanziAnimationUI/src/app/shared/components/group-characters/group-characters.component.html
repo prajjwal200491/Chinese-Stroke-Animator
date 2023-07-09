@@ -1,9 +1,9 @@
-<div class="display-flex">
+<div class="display-flex" #main>
 <ng-container *ngFor="let character of characters; let i=index">
     <div class="wrapper-character">
     <ng-container *ngTemplateOutlet="action; context: {index: i, character: character}"></ng-container>
     <div class="character-container">
-        <div #main id="{{'character-target-'+i}}" [ngClass]="{'hide-element':toggleBackground[i].initial!=='initial'}"></div>
+        <div id="{{'character-target-'+i}}" [ngClass]="{'hide-element':toggleBackground[i].initial!=='initial'}"></div>
         <div  [ngClass]="{'hide-element':toggleBackground[i].triangle!=='triangle'}">
             <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" id="{{'grid-triangle-'+i}}">
                 <line x1="0" y1="0" x2="300" y2="0" stroke="#DDD" />

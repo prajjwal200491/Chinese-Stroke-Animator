@@ -3,10 +3,11 @@
   <div class="col-8 column-left">
   <div class="search-row">
     <div class="search-bar">
-      <div class="form-group has-search">
+      <div class="form-group has-search" style="display: flex;">
         <i class="bi bi-search"></i>
         <input type="text" class="form-control" placeholder="Animate stroke order" [(ngModel)]="chineseTxt"
-          (ngModelChange)="textChange($event)" maxlength="5">
+             (keyup.enter)="textChange()">
+          <div class="btn btn-outline-secondary" [ngClass]="{'disable-element': onSearchDisabled()}" (click)="textChange()">Search</div>
       </div>
     </div>
   </div>

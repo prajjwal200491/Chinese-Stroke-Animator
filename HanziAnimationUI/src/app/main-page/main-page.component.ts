@@ -39,12 +39,18 @@ export class MainPageComponent implements OnInit {
     });
     this.characterService.getHanziWriter().subscribe(w=> this.writer=w);
   }
-  textChange(e: any){
-    this.store.dispatch(searchCharacter({search: e}));
+  textChange(){
+    this.store.dispatch(searchCharacter({search: this.chineseTxt}));
+    this.onSearchDisabled();
   }
   onClick(character: string){
     this.characterService.destroyCharacter(this.writer);
     this.store.dispatch(updateCharacter({character: character}))
+  }
+
+  onSearchDisabled(){
+    const pattern = /^[a-zA-Z\s]+$/;
+    return pattern.test(this.chineseTxt);
   }
 
 

@@ -24,6 +24,9 @@
                 pointer-events: none;
                 color: #aaa;
             }
+            & .has-search .btn-outline-secondary{
+                margin-left: 0.5rem;
+            }
         }
         
     }
@@ -59,6 +62,10 @@
             }
         }
     }
-    
+    .disable-element{
+        pointer-events: none;
+        background-color: #e9ecef;
+        opacity: 1;
+    }
 }
 
