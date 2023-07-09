@@ -18,6 +18,9 @@ jobs:
     # The type of runner that the job will run on
     name: Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: HanziAnimationUI
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -35,27 +38,35 @@ jobs:
         working-directory: HanziAnimationUI
       - name: Build dependencies
         run: npm run build
+        working-directory: HanziAnimationUI
       - name: Archive production artifact
         uses: actions/upload-artifact@main
         with: 
-          name: dist
-          path: dist
+          name: build
+          path: HanziAnimationUI/dist
   deploy: 
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: HanziAnimationUI
     steps:
       - name: Checkout Repository
         uses: actions/checkout@main
       - name: Download artifact
         uses: actions/download-artifact@main
         with:
-         name: dist
-         path: dist
+         name: build
+         path: HanziAnimationUI/dist
       - name: Deploy to firebase
-        uses: w9jds/firebase-action@main
+        uses: FirebaseExtended/action-hosting-deploy@main
         with:
-          args: deploy --only hosting
+          entrypoint: ./HanziAnimationUI
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FIR_TEST_APPLICATION_D5087 }}'
+          channelId: live
+          projectId: fir-test-application-d5087
         env: 
           FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
        
