@@ -24,28 +24,3 @@
         -webkit-text-stroke: 2px;
     }
 }
-.words-input-box{
-    &>input{
-    width: 88%;
-    }
-    &>button{
-        margin-left: 0.5rem;
-    }
-}
-label{
-    margin-bottom: 4px;
-}
-.row{
-    margin-bottom: 1rem;
-}
-.label-flex{
-    display: flex;
-    justify-content: space-between;
-}
-.btn-edit{
-    padding: 2px;
-    background-color: #fff;
-    color: #212529;
-    border: #aaa;
-    font-size: 14px;
-}

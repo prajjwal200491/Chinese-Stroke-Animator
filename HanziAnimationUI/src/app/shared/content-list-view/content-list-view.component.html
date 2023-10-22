@@ -1,4 +1,4 @@
-<app-modal [modalId]="'listModalContentView'" [header]="'Create'"></app-modal>
+<app-modal [modalId]="'listModalContentView'" [header]="'Create'" [openModal]="openModal"></app-modal>
 <div class="container">
 <div class="row">
     <i class="bi bi-arrow-left" (click)="goBack()"></i>
@@ -15,7 +15,8 @@
             </div>
         </div>
         <div class="col-6">
-            <button class="btn" data-toggle="modal" data-target="#listModalContentView">+New List</button>
+            <button class="btn" data-toggle="modal" data-target="#listModalContentView" (click)="onListBtnClick()">+New List</button>
+            <!-- <button class="btn" (click)="onListBtnClick()">+New List</button> -->
         </div>
     </div>
     <div class="row">
@@ -24,9 +25,11 @@
         </div>
     </div>
     <div class="row">
-        <div *ngFor="let list of customList$ | async" class="custom-list-wrapper col-3">
+        <!-- <div *ngFor="let list of customList$ | async" class="custom-list-wrapper col-3">
             <app-custom-list [list]="list" (moveList)="reschuffleList($event)"></app-custom-list>
-        </div>
+        </div> -->
+        <app-list-wrappr></app-list-wrappr>
+
     </div>
     
 </div>

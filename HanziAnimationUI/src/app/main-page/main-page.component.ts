@@ -3,9 +3,10 @@ import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { Observable, of } from 'rxjs';
 import { CharacterService } from '../character.service';
-import { loadCharacter, loadWordsList, searchCharacter, updateCharacter } from '../state/app.actions';
-import { selectLatestCharacter, selectRecentlyTypedCharacters } from '../state/app.selector';
+import { loadCharacter, loadWordsList, loadWordsListData, searchCharacter, updateCharacter } from '../state/app.actions';
+import { selectLatestCharacter, selectListDataWithCards, selectRecentlyTypedCharacters } from '../state/app.selector';
 import { AppState } from '../state/app.state';
+import { ListData } from '../state/app.model';
 
 @Component({
   selector: 'app-main-page',
@@ -21,6 +22,10 @@ export class MainPageComponent implements OnInit {
   recentlyTyped$!: Observable<string[]>;
   latestCharacter!:string;
   groupCharacters!:string[];
+  listData!: any;
+  modalHeader: string = 'Create';
+  listname!: string;
+  selected:any;
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService) {
    }
 
@@ -38,6 +43,20 @@ export class MainPageComponent implements OnInit {
       }
     });
     this.characterService.getHanziWriter().subscribe(w=> this.writer=w);
+    this.store.select(selectListDataWithCards).subscribe(res=>{
+      if(res){
+        //this.characterService.saveListChanges(res);
+        // this.store.dispatch(loadWordsListData());
+        this.listData = Object.values(res);
+        const index=this.listData.findIndex((item:any)=> item.isSelectedList);
+        const indexItem=this.listData.find((item:any,i:number)=>i===index);
+        this.listData.splice(index,1);
+        this.listData.unshift(indexItem);
+        //this.selected = indexItem.name;
+        //this.onItemClick(indexItem.name);
+        //this.listname = indexItem.name;
+      }
+    })
   }
   textChange(){
     this.store.dispatch(searchCharacter({search: this.chineseTxt}));
@@ -51,6 +70,16 @@ export class MainPageComponent implements OnInit {
   onSearchDisabled(){
     const pattern = /^[a-zA-Z\s]+$/;
     return pattern.test(this.chineseTxt);
+  }
+
+  onItemClick(listname: string){
+    this.selected = listname;
+    this.listname = listname;
+    
+  }
+
+  isActive(item: any){
+    return this.selected === item
   }
 
 

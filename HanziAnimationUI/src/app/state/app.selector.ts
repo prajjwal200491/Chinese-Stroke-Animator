@@ -13,3 +13,4 @@ export const selectGroupRelatedWords = createSelector(selectAppState, (state: Ap
 export const selectHanziCharacterData = createSelector(selectAppState, (state: AppState)=> state.writer);
 export const selectCustomListData = createSelector(selectAppState, (state: AppState)=> state.list);
 export const selectFourCustomListData = createSelector(selectAppState, (state: AppState)=> state.list);
+export const selectListDataWithCards = createSelector(selectAppState, (state: AppState)=> state.listData);

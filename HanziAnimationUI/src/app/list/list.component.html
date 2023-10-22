@@ -1,0 +1,15 @@
+<app-add-card-modal [modalId]="'addCard'+listName" [listName]="listName"></app-add-card-modal>
+<div class="flex-container-justify">
+    <h5>{{listName}}</h5>
+    <button class="btn" (click)="addCard()" data-toggle="modal" [attr.data-target]="'#addCard'+listName"><i class="bi bi-plus-circle"></i></button>
+    
+</div>
+
+<div class="flex-container border-design">
+    
+<ng-container *ngFor="let l of listValues">
+    <div class="custom-list-wrapper">
+        <app-custom-list [list]="l" [listName]="list.name"></app-custom-list>
+    </div>
+</ng-container>
+</div>

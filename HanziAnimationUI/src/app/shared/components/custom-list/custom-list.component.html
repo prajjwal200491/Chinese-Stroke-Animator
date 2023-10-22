@@ -1,6 +1,6 @@
-<app-modal [modalId]="'customlist'+list.name" [header]="modalHeader" [list]="list" [disabled]="true"></app-modal>
+<app-modal [modalId]="'customlist'+list.name+listName" [header]="modalHeader" [list]="list" [listName]="listName" [disabled]="true" [openModal]="openModal"></app-modal>
 <div class="custom-list" >
-    <label for="" data-toggle="modal" [attr.data-target]="'#customlist'+list.name">+{{list.name}}</label>
+    <label for="" data-toggle="modal" [attr.data-target]="'#customlist'+list.name+listName" (click)="onCardBtnClick()">+{{list.name}}</label>
     <div class="list"  [ngClass]="{'transform-list':list.selected}">
         <span class="character" [ngClass]="{'font-bold':c.active}" *ngFor="let c of list.characters.slice(0,19)" (click)="onClick(c)">{{c.value}}</span>
         <span [ngbPopover]="popContent" popoverClass="popover-characters" placement="right" class="character"

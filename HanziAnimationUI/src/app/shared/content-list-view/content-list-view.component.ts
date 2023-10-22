@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { reschuffleList } from 'src/app/state/app.actions';
-import { List } from 'src/app/state/app.model';
-import { selectCustomListData } from 'src/app/state/app.selector';
+import { ModalService } from 'src/app/modal.service';
+import { loadWordsListData, reschuffleList } from 'src/app/state/app.actions';
+import { List, ListData } from 'src/app/state/app.model';
+import { selectCustomListData, selectListDataWithCards } from 'src/app/state/app.selector';
 import { AppState } from 'src/app/state/app.state';
 
 @Component({
@@ -17,11 +18,15 @@ export class ContentListViewComponent implements OnInit {
   customList$!: Observable<List[]>;
   modalHeader: string = 'Create';
   listName: string='';
+  openModal=false;
 
-  constructor(private readonly store: Store<AppState>, private readonly location: Location) { }
+  constructor(private readonly store: Store<AppState>, private readonly location: Location, 
+    private readonly ms: ModalService) { 
+  }
 
   ngOnInit(): void {
     this.customList$ = this.store.select(selectCustomListData);
+    this.store.dispatch(loadWordsListData());
   }
 
   onListSearch():void{
@@ -36,6 +41,10 @@ export class ContentListViewComponent implements OnInit {
 
   reschuffleList(list:List){
     this.store.dispatch(reschuffleList({list:list}));
+  }
+
+  onListBtnClick(){
+    this.ms.openModal();
   }
 
 

@@ -24,6 +24,9 @@ import { GroupCharactersComponent } from './shared/components/group-characters/g
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideDatabase,getDatabase } from '@angular/fire/database';
+import { ListComponent } from './list/list.component';
+import { ListWrapprComponent } from './list-wrappr/list-wrappr.component';
+import { AddCardModalComponent } from './add-card-modal/add-card-modal.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,10 @@ import { provideDatabase,getDatabase } from '@angular/fire/database';
     CustomListComponent,
     ModalComponent,
     ContentListViewComponent,
-    GroupCharactersComponent
+    GroupCharactersComponent,
+    ListComponent,
+    ListWrapprComponent,
+    AddCardModalComponent
   ],
   imports: [
     BrowserModule,

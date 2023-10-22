@@ -1,23 +1,41 @@
 <!-- The Modal -->
-<div class="modal fade" [id]="modalId" [formGroup]="listForm">
+<div class="modal fade" [id]="modalId" [formGroup]="listForm" #myModal  (hidden.bs.modal)="onModalOpen($event)">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">{{header}} List</h4>
+                <h4 class="modal-title">{{header}}</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-4"><label for="">List Name:</label></div>
-                    <div class="col-8"><input type="text" formControlName="name">
-                        <div *ngIf="listForm.value['name'].includes(' ')" class="text-danger">List Name should not contain spaces</div>
+                    <div class="col-6">
+                        <div class="label-flex">
+                            <label for="">List Name:</label>
+                            <button class="btn btn-edit" for="" (click)="onEditList()">edit</button>
+                        </div>
+                        <div><input type="text" formControlName="name" style="width: 100%;">
+                            <div *ngIf="listForm.value['name'] && listForm.value['name'].includes(' ')" class="text-danger">List Name should not
+                                contain spaces</div>
+                        </div>
                     </div>
+                    <div class="col-6">
+                        <div class="label-flex"> 
+                            <label for="">Card:</label>
+                            <button class="btn btn-edit" for="" (click)="onEditCard()">edit</button>
+                        </div>
+                        <div> <input type="text" formControlName="cardName" placeholder="Enter card name" style="width: 100%;">
+                            <div *ngIf="listForm.value['cardName'] && listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should
+                                not contain spaces</div>
+                            <!-- <button (click)="addCard(cardName?.value)" [disabled]="!cardName?.value">Add</button> -->
+                        </div>
+                    </div>
+
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-4"> <label for="">Word:</label></div>
                     <div class="col-8"> <input type="text" formControlName="word" placeholder="Enter single character">
                         <button (click)="addToWordsList(word)" [disabled]="word?.value.length!==1">Add</button>
@@ -27,20 +45,37 @@
                     <div class="col-4"> <label for="">Group:</label></div>
                     <div class="col-8"> <input type="text" formControlName="groups" placeholder="Enter multiple characters">
                     <button (click)="addToWordsList(groups)" [disabled]="groups?.value.length<2">Add</button></div>
+                </div> -->
+                <!-- <div class="row">
+                    <div class="col-4"> <label for="">Card:</label></div>
+                    <div class="col-8"> <input type="text" formControlName="cardName" placeholder="Enter card name">
+                    <div *ngIf="listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should not contain spaces</div>
+                    </div>
+                </div> -->
+                <div class="row">
+                    <div class="col-12">
+                        <label for="">Words:</label>
+                    <div class="words-input-box"> <input type="text" formControlName="words" placeholder="Enter words">
+                        <button (click)="addToWordsList(words)" [disabled]="!words?.value">Add</button>
+                    </div>
+                    </div>
+                    
                 </div>
                 <br>
 
                 <div class="pill-container" *ngIf="wordList.length>0">
-                    <div class="word-pill" *ngFor="let word of wordList; let i=index">{{word.value}} <button class="btn"> <i
-                                class="bi bi-dash-lg" (click)="removeFromList(i)"></i></button> </div>
-                </div> 
+                    <div *ngIf="latestCardName"> <label for="">{{latestCardName}}:</label></div>
+                    <div class="word-pill" *ngFor="let word of wordList; let i=index">{{word.value}} <button
+                            class="btn"> <i class="bi bi-dash-lg" (click)="removeFromList(i)"></i></button> </div>
+                </div>
 
 
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" data-dismiss="modal" (click)="onSubmit()" [disabled]="wordList.length===0 || listForm.value['name'].includes(' ')">Done</button>
+                    <button class="btn btn-primary" data-dismiss="modal" (click)="onSubmit()"
+                        [disabled]="wordList.length===0 || (listForm.value['name'] && listForm.value['name'].includes(' ')) || (listForm.value['cardName'] && listForm.value['cardName'].includes(' '))">Done</button>
                 </div>
             </div>
         </div>

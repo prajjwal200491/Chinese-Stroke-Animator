@@ -4,7 +4,7 @@ import { Database, onValue, ref, set, update } from '@angular/fire/database';
 import HanziWriter from 'hanzi-writer';
 import { from, Observable, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { Character, CharacterProperties, List } from './state/app.model';
+import { Character, CharacterProperties, List, ListData } from './state/app.model';
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +71,22 @@ export class CharacterService {
     return from(updateRef);
   }
 
+  saveListData(listData:ListData): Observable<string>{
+     const saveRef=update(ref(this.database, 'listData/' + listData.name), listData).then(()=>{
+      return 'successfully saved'
+    });
+    return from(saveRef);
+  }
+
+  
+
+  updateListData(listData:ListData): Observable<string>{
+     const updateRef=update(ref(this.database, 'listData/' + listData.name), listData).then(()=>{
+      return 'successfully updated'
+    });
+    return from(updateRef);
+  }
+
   
   // test(): Observable<any>{
   //   return this.http.put('https://fir-test-application-d5087-default-rtdb.firebaseio.com/lists.json',
@@ -83,6 +99,17 @@ export class CharacterService {
     return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/lists.json')
   }
 
+  getListData():Observable<any>{
+    return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/listData.json')
+  }
+
+  saveListChanges(listData:ListData):Observable<string>{
+    const saveRef=set(ref(this.database, '/'+ 'listData'), listData).then(()=>{
+      return 'successfully saved'
+    });
+    return from(saveRef);
+ }
+ 
 
 
   // updateList(list:List): Observable<any>{

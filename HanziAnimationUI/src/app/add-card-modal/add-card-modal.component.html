@@ -1,0 +1,48 @@
+<!-- The Modal -->
+<div class="modal fade" [id]="modalId" [formGroup]="cardForm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Card</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-4"><label for="">List Name:</label></div>
+                    <div class="col-8"><input type="text" formControlName="listname">
+                        <!-- <div *ngIf="listForm.value['name'].includes(' ')" class="text-danger">List Name should not contain spaces</div> -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4"><label for="">Card Name:</label></div>
+                    <div class="col-8"><input type="text" formControlName="name">
+                        <!-- <div *ngIf="listForm.value['name'].includes(' ')" class="text-danger">List Name should not contain spaces</div> -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4"> <label for="">Words:</label></div>
+                    <div class="col-8"> <input type="text" formControlName="words" placeholder="Enter words">
+                        <button (click)="addToWordsList(words)" [disabled]="!words?.value">Add</button>
+                    </div>
+                </div>
+                <br><br>
+                <div class="pill-container" *ngIf="wordList.length>0">
+                    <div class="word-pill" *ngFor="let word of wordList; let i=index">{{word.value}} <button class="btn"> <i
+                                class="bi bi-dash-lg" (click)="removeFromList(i)"></i></button> </div>
+                </div> 
+                
+
+
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" data-dismiss="modal" (click)="onSubmitCard()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>

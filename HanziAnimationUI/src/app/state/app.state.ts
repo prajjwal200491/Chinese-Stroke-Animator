@@ -1,6 +1,6 @@
 import { createFeatureSelector } from "@ngrx/store";
 import HanziWriter from "hanzi-writer";
-import { List } from "./app.model";
+import { List, ListData } from "./app.model";
 export interface AppState{
     search: string;
     recentlyTyped: string[];
@@ -11,6 +11,7 @@ export interface AppState{
     list: List[];
     listIds: string[];
     testList: List[];
+    listData?: ListData;
     relatedWords: string;
     groupCharactersDecomposition: GroupCharacter[];
     groupCharactersRelatedWords: GroupCharacter[];
