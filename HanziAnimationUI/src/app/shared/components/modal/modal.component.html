@@ -14,22 +14,22 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="label-flex">
-                            <label for="">List Name:</label>
-                            <button class="btn btn-edit" for="" (click)="onEditList()">edit</button>
+                            <label for="">Group Name:</label>
+                            <button class="bubble-btn" for="" (click)="onEditList()">edit</button>
                         </div>
-                        <div><input type="text" formControlName="name" style="width: 100%;">
-                            <div *ngIf="listForm.value['name'] && listForm.value['name'].includes(' ')" class="text-danger">List Name should not
-                                contain spaces</div>
+                        <div><input #listInputBox type="text" formControlName="name" style="width: 100%;">
+                            <!-- <div *ngIf="listForm.value['name'] && listForm.value['name'].includes(' ')" class="text-danger">List Name should not
+                                contain spaces</div> -->
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="label-flex"> 
-                            <label for="">Card:</label>
-                            <button class="btn btn-edit" for="" (click)="onEditCard()">edit</button>
+                            <label for="">Word Card:</label>
+                            <button class="bubble-btn" for="" (click)="onEditCard()">edit</button>
                         </div>
-                        <div> <input type="text" formControlName="cardName" placeholder="Enter card name" style="width: 100%;">
-                            <div *ngIf="listForm.value['cardName'] && listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should
-                                not contain spaces</div>
+                        <div> <input #cardInputBox type="text" formControlName="cardName" placeholder="Enter card name" style="width: 100%;">
+                            <!-- <div *ngIf="listForm.value['cardName'] && listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should
+                                not contain spaces</div> -->
                             <!-- <button (click)="addCard(cardName?.value)" [disabled]="!cardName?.value">Add</button> -->
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     <div class="col-12">
                         <label for="">Words:</label>
                     <div class="words-input-box"> <input type="text" formControlName="words" placeholder="Enter words">
-                        <button (click)="addToWordsList(words)" [disabled]="!words?.value">Add</button>
+                        <button (click)="addToWordsList(words)" [disabled]="!words?.value">Add Words</button>
                     </div>
                     </div>
                     
@@ -75,7 +75,8 @@
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal">Cancel</button>
                     <button class="btn btn-primary" data-dismiss="modal" (click)="onSubmit()"
-                        [disabled]="wordList.length===0 || (listForm.value['name'] && listForm.value['name'].includes(' ')) || (listForm.value['cardName'] && listForm.value['cardName'].includes(' '))">Done</button>
+                        [disabled]="wordList.length===0 ">Done</button>
+                        <!-- [disabled]="wordList.length===0 || (listForm.value['name'] && listForm.value['name'].includes(' ')) || (listForm.value['cardName'] && listForm.value['cardName'].includes(' '))">Done</button> -->
                 </div>
             </div>
         </div>

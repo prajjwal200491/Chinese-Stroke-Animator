@@ -17,6 +17,7 @@ import { addWordList } from '../state/app.actions';
 export class AddCardModalComponent implements OnInit, OnChanges {
   @Input() modalId!: string;
   @Input() listName!: any;
+  @Input() nameWithSpaces!: any;
   cardForm: FormGroup;
   wordList: Character[]=[];
   listData$!: Observable<any>;
@@ -32,7 +33,7 @@ export class AddCardModalComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.listData$ = this.store.select(selectListDataWithCards);
     this.cardForm.patchValue({
-      listname: this.listName,
+      listname: this.nameWithSpaces,
       //characters: this.list.characters.map(c => c.value).join('')
     })
     this.cardForm.get('listname')?.disable();
@@ -72,17 +73,19 @@ export class AddCardModalComponent implements OnInit, OnChanges {
       if(data && this.listName){
         let list = data[this.listName];
         let card: List = {
-              name: this.cardForm.get('name')?.value,
+              nameWithoutSpaces: this.cardForm.get('name')?.value.split(" ").join(""),
+              nameWithSpaces: this.cardForm.get('name')?.value,
               selected: false,
               characters: this.wordList
         }
         let values:any={};
-        values[card.name]= card;
+        values[card.nameWithoutSpaces]= card;
         values={
           ...list.values, ...values
         }
         let final:ListData = {
-          name: this.listName,
+          nameWithoutSpaces: this.listName.split(" ").join(""),
+          nameWithSpaces: this.listName,
           values
         };
         this.store.dispatch(addWordList({list: final})) ;

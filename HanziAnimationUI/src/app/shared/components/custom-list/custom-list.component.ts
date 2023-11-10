@@ -16,6 +16,7 @@ export class CustomListComponent implements OnInit {
   modalHeader: string = 'Update';
   @Input() list!: List;
   @Input() listName!: string;
+  @Input() nameWithSpaces!: string;
   @Output() moveList = new EventEmitter();
   openModal=false;
 
@@ -27,7 +28,7 @@ export class CustomListComponent implements OnInit {
   }
 
   onClick(character: Character): void {
-    this.store.dispatch(setActiveCharacterList({character:{active: true, value: character.value}, listName: this.listName, cardName: this.list.name}));
+    this.store.dispatch(setActiveCharacterList({character:{active: true, value: character.value}, listName: this.listName, cardName: this.list.nameWithoutSpaces}));
     this.store.dispatch(shouldSelectList({listname: this.listName}));
     this.store.dispatch(moveListToTop({listname: this.listName}));
     if (this.router.url === '/lists') {

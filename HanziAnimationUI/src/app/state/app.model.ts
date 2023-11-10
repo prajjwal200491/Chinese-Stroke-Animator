@@ -10,14 +10,16 @@ export interface CharacterProperties {
 }
 
 export interface List{
-    name: string;
+    nameWithoutSpaces: string;
+    nameWithSpaces: string;
     characters: Character[];
     selected: boolean;
 }
 
 export interface ListData {
     [key : string]:{
-        name: string;
+        nameWithoutSpaces: string;
+        nameWithSpaces: string;
         values: {
             [key: string] :List
         };

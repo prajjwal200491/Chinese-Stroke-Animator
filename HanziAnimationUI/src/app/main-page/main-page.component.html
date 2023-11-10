@@ -1,4 +1,4 @@
-<app-modal [modalId]="'listModal'" [header]="modalHeader"></app-modal>
+<app-modal [modalId]="'listModal'" [header]="modalHeader" [nameWithSpaces]="nameWithSpaces"></app-modal>
 <div class="container">
   <div class="row">
   <div class="col-8 column-left">
@@ -36,18 +36,32 @@
         <button [routerLink]="['/lists']" class="btn btn-primary"> More List...</button>
       </div> -->
       <div class="sticky-header">
-        <h6>Lists</h6>
-        <button class="btn" data-toggle="modal" data-target="#listModal">+New List</button>
+        <h6>Groups</h6>
+        <button class="btn bubble-btn" data-toggle="modal" data-target="#listModal">+New List</button>
     </div>
-        <ul class="list-group">
+
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle full-width" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{displayName}}
+      </button>
+      <div class="dropdown-menu full-width" aria-labelledby="dropdownMenuButton">
+        <ng-container *ngFor="let list of listData; let i=index">
+          <li *ngIf="i<=2" class="dropdown-item list-group-item" [ngClass]="{active: isActive(list.nameWithoutSpaces)}" href="#" (click)="onItemClick(list)">{{list.nameWithSpaces}}</li>
+        </ng-container>
+      </div>
+    </div>
+        <!-- <ul class="list-group">
           <ng-container *ngFor="let list of listData; let i=index">
-            <li *ngIf="i<=2" [ngClass]="{active: isActive(list.name)}" class="list-group-item" aria-current="true" (click)="onItemClick(list.name)">
-              <div>{{list.name}}</div>
+            <li *ngIf="i<=2" [ngClass]="{active: isActive(list.nameWithoutSpaces)}" class="list-group-item" aria-current="true" (click)="onItemClick(list)">
+              <div>{{list.nameWithSpaces}}</div>
               <div class="share"><a>share</a></div>
             </li>
           </ng-container>
           
-        </ul>
+        </ul> -->
+
+        
+
       <app-character-list [listname]="listname"></app-character-list>
       <div class="more-list">
         <button [routerLink]="['/lists']" class="btn btn-primary"> More List...</button>

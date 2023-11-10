@@ -30,7 +30,7 @@ selectedListValues:any;
     this.store.select(selectListDataWithCards).subscribe(res=>{
       if(res && this.listname){
         this.selectedList=Object.values(res).filter(list=>{
-          return list.name === this.listname
+          return list.nameWithoutSpaces === this.listname
         });
         this.selectedListValues=Object.values(this.selectedList[0].values)
       }

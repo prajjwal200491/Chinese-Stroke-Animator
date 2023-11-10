@@ -17,6 +17,7 @@ export const reschuffleList = createAction(`Reschuffle List`, props<{list: List}
 export const saveReschuffledList = createAction(`Save Reschuffle List`, props<{list: List[]}>());
 export const setActiveCharacterList = createAction(`Set Active Character List`, props<{character: Character, listName: string, cardName: string}>());
 export const setAllCardsInactive = createAction(`Set All Cards Inactive`, props<{character: Character, listName: string, cardName: string}>());
+export const setAllListsInactiveOnSearch = createAction(`Set All Lists Inactive on Search`);
 export const resetGroupWriter = createAction(`Reset Group Writer`);
 export const saveGroupDecomposition = createAction(`Save Group Decomposition`, props<{group: GroupCharacter[]}>());
 export const saveGroupRelatedWords = createAction(`Save Related Words`, props<{group: GroupCharacter[]}>());

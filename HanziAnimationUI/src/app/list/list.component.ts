@@ -14,7 +14,8 @@ import { map } from 'rxjs/operators';
 export class ListComponent implements OnInit, OnChanges {
   
 @Input() list:any;
-@Input() listName:any;
+@Input() nameWithoutSpaces:any;
+@Input() nameWithSpaces:any;
 listValues:any;
   constructor(private readonly store: Store<AppState>) {
     

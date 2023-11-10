@@ -7,7 +7,7 @@
         cursor: pointer;
     }
     & .list:active{
-        transform: scale(0.94);
+        //transform: scale(0.94);
     }
 
     & .list{
@@ -32,6 +32,7 @@
         }
         &>.character:active{
             font-weight: bold;
+            
         }
         & .popover-characters .popover-body span {
             background: yellow;
@@ -56,9 +57,29 @@
    .font-bold{
     font-weight: bold;
     transform: scale(1.25);
+    // border: 1px solid beige;
+    // border-radius: 5px;
+    color: brown;
    }
    .transform-list{
     transform: scale(0.94);
    }
    
+   .bubble-btn{
+    transition: transform 0.3s;
+   }
+   .bubble-btn:hover {
+    animation: bubble 0.4s ease-out;
+  }
+  @keyframes bubble {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 

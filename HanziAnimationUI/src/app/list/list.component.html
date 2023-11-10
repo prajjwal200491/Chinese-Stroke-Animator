@@ -1,7 +1,7 @@
-<app-add-card-modal [modalId]="'addCard'+listName" [listName]="listName"></app-add-card-modal>
+<app-add-card-modal [modalId]="'addCard'+nameWithoutSpaces" [listName]="nameWithoutSpaces" [nameWithSpaces]="nameWithSpaces"></app-add-card-modal>
 <div class="flex-container-justify">
-    <h5>{{listName}}</h5>
-    <button class="btn" (click)="addCard()" data-toggle="modal" [attr.data-target]="'#addCard'+listName"><i class="bi bi-plus-circle"></i></button>
+    <h5>{{nameWithSpaces}}</h5>
+    <button class="btn" (click)="addCard()" data-toggle="modal" [attr.data-target]="'#addCard'+nameWithoutSpaces"><i class="bi bi-plus-circle"></i></button>
     
 </div>
 
@@ -9,7 +9,7 @@
     
 <ng-container *ngFor="let l of listValues">
     <div class="custom-list-wrapper">
-        <app-custom-list [list]="l" [listName]="list.name"></app-custom-list>
+        <app-custom-list [list]="l" [listName]="list.nameWithoutSpaces" [nameWithSpaces]="list.nameWithSpaces"></app-custom-list>
     </div>
 </ng-container>
 </div>

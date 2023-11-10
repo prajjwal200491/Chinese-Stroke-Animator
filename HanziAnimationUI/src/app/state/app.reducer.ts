@@ -1,13 +1,13 @@
 import { createReducer, on } from "@ngrx/store";
-import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList } from "./app.actions";
+import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch } from "./app.actions";
 import { AppState } from "./app.state";
 import { List, ListData } from "./app.model";
 
 export const initialState: AppState = {
-    search: '開',
-    recentlyTyped: ['開'],
+    search: '',
+    recentlyTyped: [''],
     decomposition: '',
-    character: '開',
+    character: '',
     testList:[],
     listIds: [],
     list: [
@@ -183,7 +183,8 @@ export const appReducer = createReducer(
 
         updatedCard.selected = true;
         updatedListData[listName]={
-          name: updatedListData[listName].name,
+          nameWithoutSpaces: updatedListData[listName].nameWithoutSpaces,
+          nameWithSpaces: updatedListData[listName].nameWithSpaces,
           values:{
             ...updatedListData[listName].values,
             [cardName]: updatedCard,
@@ -194,6 +195,41 @@ export const appReducer = createReducer(
     return {
         ...state,
         listData: updatedListData,
+    };
+}),
+
+on(setAllListsInactiveOnSearch, (state: AppState): AppState=>{
+   // Create a new copy of the state with all cards set to inactive
+   const updatedListData = { ...state.listData };
+
+   for (const lname in updatedListData) {
+     if (updatedListData.hasOwnProperty(lname)) {
+      const list = updatedListData[lname];
+      if (list && list.values) {
+        for (const cname in list.values) {
+          const updatedCard = { ...list.values[cname] };
+          if (list.values.hasOwnProperty(cname)) {
+            updatedCard.characters = (updatedCard.characters || []).map(c => ({
+                ...c,
+                active: false
+              }));
+              updatedCard.selected = false;
+              updatedListData[lname] = {
+                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
+                nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                values: {
+                  ...updatedListData[lname].values,
+                  [cname]: updatedCard,
+                },
+              };
+          }
+        }
+      }
+     }
+    }
+    return {
+      ...state,
+      listData: updatedListData,
     };
 }),
 
@@ -226,7 +262,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             );
             updatedCard.selected = false;
               updatedListData[lname] = {
-                name: updatedListData[lname].name,
+                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
+                nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -240,7 +277,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             }));
             updatedCard.selected = false;
               updatedListData[lname] = {
-                name: updatedListData[lname].name,
+                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
+                nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -263,7 +301,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
               }));
               updatedCard.selected = false;
               updatedListData[lname] = {
-                name: updatedListData[lname].name,
+                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
+                nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -289,7 +328,7 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
     (state: AppState, operationResult): AppState => ({
       ...state,
       list: state.list.map((content) =>
-        content.name === operationResult.list.name
+        content.nameWithoutSpaces === operationResult.list.nameWithoutSpaces
           ? { ...content, characters: operationResult.list.characters }
           : content
       ),

@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { Observable, of } from 'rxjs';
 import { CharacterService } from '../character.service';
-import { loadCharacter, loadWordsList, loadWordsListData, searchCharacter, updateCharacter } from '../state/app.actions';
+import { loadCharacter, loadWordsList, loadWordsListData, searchCharacter, setAllListsInactiveOnSearch, updateCharacter } from '../state/app.actions';
 import { selectLatestCharacter, selectListDataWithCards, selectRecentlyTypedCharacters } from '../state/app.selector';
 import { AppState } from '../state/app.state';
 import { ListData } from '../state/app.model';
@@ -18,7 +18,7 @@ export class MainPageComponent implements OnInit {
   slider: any;
   isPaused: boolean = true;
   playing: boolean = false;
-  chineseTxt:string='開';
+  chineseTxt:string='';
   recentlyTyped$!: Observable<string[]>;
   latestCharacter!:string;
   groupCharacters!:string[];
@@ -26,6 +26,8 @@ export class MainPageComponent implements OnInit {
   modalHeader: string = 'Create';
   listname!: string;
   selected:any;
+  nameWithSpaces:any;
+  displayName:any='Lists';
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService) {
    }
 
@@ -50,6 +52,22 @@ export class MainPageComponent implements OnInit {
         this.listData = Object.values(res);
         const index=this.listData.findIndex((item:any)=> item.isSelectedList);
         const indexItem=this.listData.find((item:any,i:number)=>i===index);
+        const activeCharacter = this.getActiveCharacter(indexItem);
+        if(activeCharacter){
+          let c = activeCharacter.value;
+          if(c.length>1){
+            this.latestCharacter='';
+            this.groupCharacters=c.split('');
+          }
+          else{
+            this.groupCharacters=[];
+          this.latestCharacter=c;
+          }
+        }
+        this.nameWithSpaces = indexItem.nameWithSpaces;
+        this.displayName = this.nameWithSpaces;
+        this.listname=indexItem.nameWithoutSpaces;
+        this.selected=indexItem.nameWithoutSpaces;
         this.listData.splice(index,1);
         this.listData.unshift(indexItem);
         //this.selected = indexItem.name;
@@ -59,6 +77,7 @@ export class MainPageComponent implements OnInit {
     })
   }
   textChange(){
+    this.store.dispatch(setAllListsInactiveOnSearch());
     this.store.dispatch(searchCharacter({search: this.chineseTxt}));
     this.onSearchDisabled();
   }
@@ -72,14 +91,28 @@ export class MainPageComponent implements OnInit {
     return pattern.test(this.chineseTxt);
   }
 
-  onItemClick(listname: string){
-    this.selected = listname;
-    this.listname = listname;
-    
+  onItemClick(list: any){
+    this.selected = list.nameWithoutSpaces;
+    this.listname = list.nameWithoutSpaces;
+    this.nameWithSpaces = list.nameWithSpaces;
+    this.displayName = this.nameWithSpaces;
   }
 
   isActive(item: any){
     return this.selected === item
+  }
+
+  getActiveCharacter(item:any):any{
+    let values = item.values;
+    let activeCharacter;
+    for(let o in values){
+      let characters = values[o].characters;
+      activeCharacter = characters.find((c:any)=> c.active);
+      if(activeCharacter){
+        return activeCharacter;
+      }
+    }
+    return activeCharacter
   }
 
 

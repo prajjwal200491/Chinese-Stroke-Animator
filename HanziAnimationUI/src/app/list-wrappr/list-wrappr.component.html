@@ -1,3 +1,3 @@
 <ng-container *ngFor="let list of listValues; let i=index">
-    <app-list [list]="list" [listName]="list.name"></app-list>
+    <app-list [list]="list" [nameWithoutSpaces]="list.nameWithoutSpaces" [nameWithSpaces]="list.nameWithSpaces" ></app-list>
 </ng-container>

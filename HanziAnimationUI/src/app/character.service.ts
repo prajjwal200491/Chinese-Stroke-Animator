@@ -58,21 +58,21 @@ export class CharacterService {
   }
 
   saveList(list:List): Observable<string>{
-     const saveRef=set(ref(this.database, 'lists/' + list.name), list).then(()=>{
+     const saveRef=set(ref(this.database, 'lists/' + list.nameWithoutSpaces), list).then(()=>{
       return 'successfully saved'
     });
     return from(saveRef);
   }
 
   updateList(list:List): Observable<string>{
-     const updateRef=update(ref(this.database, 'lists/' + list.name), list).then(()=>{
+     const updateRef=update(ref(this.database, 'lists/' + list.nameWithoutSpaces), list).then(()=>{
       return 'successfully updated'
     });
     return from(updateRef);
   }
 
   saveListData(listData:ListData): Observable<string>{
-     const saveRef=update(ref(this.database, 'listData/' + listData.name), listData).then(()=>{
+     const saveRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
       return 'successfully saved'
     });
     return from(saveRef);
@@ -81,7 +81,7 @@ export class CharacterService {
   
 
   updateListData(listData:ListData): Observable<string>{
-     const updateRef=update(ref(this.database, 'listData/' + listData.name), listData).then(()=>{
+     const updateRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
       return 'successfully updated'
     });
     return from(updateRef);

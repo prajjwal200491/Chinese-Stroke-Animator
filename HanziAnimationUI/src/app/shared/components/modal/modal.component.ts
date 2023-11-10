@@ -16,8 +16,11 @@ import { ModalService } from 'src/app/modal.service';
 })
 export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('myModal') myModal!:ElementRef;
+  @ViewChild('cardInputBox') cardInputBox!:ElementRef;
+  @ViewChild('listInputBox') listInputBox!:ElementRef;
   @Input() modalId!: string;
   @Input() listName!: any;
+  @Input() nameWithSpaces!: any;
   @Input() header!: string;
   @Input() list!: List;
   @Input() disabled!: boolean;
@@ -55,7 +58,12 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
     if(this.list){
       this.wordList=[...this.list.characters];
     }
-    
+    if(this.nameWithSpaces){
+      this.listForm.patchValue({
+        name: this.nameWithSpaces,
+        //characters: this.list.characters.map(c => c.value).join('')
+      });
+    }
     
   }
 
@@ -63,8 +71,8 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
       this.wordList=[...this.list?.characters];
 
     this.listForm.patchValue({
-      name: this.listName,
-      cardName: this.list?.name,
+      //name: this.nameWithSpaces,
+      cardName: this.list?.nameWithSpaces,
       //characters: this.list.characters.map(c => c.value).join('')
     });
     this.store.select(selectListDataWithCards).pipe(take(1)).subscribe((res:any)=>{
@@ -77,7 +85,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   get name() {
-    return this.list.name
+    return this.list.nameWithSpaces
   }
 
   get words(){
@@ -117,26 +125,29 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
 
   onEditList(){
     this.listForm.get('name')?.enable();
-    
+    this.listInputBox.nativeElement.focus();
   }
 
   onEditCard(){
     this.listForm.get('cardName')?.enable();
+    this.cardInputBox.nativeElement.focus();
   }
 
 
   onSubmit(): void {
     let card:List = {
-            name: this.listForm.get('cardName')?.value,
+            nameWithoutSpaces: this.listForm.get('cardName')?.value.split(" ").join(""),
+            nameWithSpaces: this.listForm.get('cardName')?.value,
             characters: this.wordList,
             selected: false
     };
     let values:any = {};
-    values[card.name]=card;
+    values[card.nameWithoutSpaces]=card;
     if (this.header === 'Create') {
 
       const final:ListData={
-        name: this.listForm.get('name')?.value,
+        nameWithoutSpaces: this.listForm.get('name')?.value.split(" ").join(""),
+        nameWithSpaces: this.listForm.get('name')?.value,
         values
       
       }
@@ -147,12 +158,13 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
       let dataref = {
         ...this.data.values
       };
-      delete dataref[this.list.name];
+      delete dataref[this.list.nameWithoutSpaces];
       values={
         ...dataref, ...values
       }
       const final: ListData = {
-        name: this.listForm.get('name')?.value,
+        nameWithoutSpaces: this.listForm.get('name')?.value.split(" ").join(""),
+        nameWithSpaces: this.listForm.get('name')?.value,
         values
         // ...this.list,
         // characters: this.wordList,

@@ -245,7 +245,7 @@ export class AppEffects {
 
   moveItem(allList: List[], list: List) {
     allList.forEach((item, index) => {
-      if (item.name === list.name) {
+      if (item.nameWithoutSpaces === list.nameWithoutSpaces) {
         allList.splice(index, 1);
         allList.splice(0, 0, list);
       }
