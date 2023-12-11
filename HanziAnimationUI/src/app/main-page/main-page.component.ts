@@ -64,10 +64,10 @@ export class MainPageComponent implements OnInit {
           this.latestCharacter=c;
           }
         }
-        this.nameWithSpaces = indexItem.nameWithSpaces;
+        this.nameWithSpaces = indexItem.listname;
         this.displayName = this.nameWithSpaces;
-        this.listname=indexItem.nameWithoutSpaces;
-        this.selected=indexItem.nameWithoutSpaces;
+        this.listname=indexItem.listname;
+        this.selected=indexItem.listname;
         this.listData.splice(index,1);
         this.listData.unshift(indexItem);
         //this.selected = indexItem.name;
@@ -92,9 +92,9 @@ export class MainPageComponent implements OnInit {
   }
 
   onItemClick(list: any){
-    this.selected = list.nameWithoutSpaces;
-    this.listname = list.nameWithoutSpaces;
-    this.nameWithSpaces = list.nameWithSpaces;
+    this.selected = list.listname;
+    this.listname = list.listname;
+    this.nameWithSpaces = list.listname;
     this.displayName = this.nameWithSpaces;
   }
 

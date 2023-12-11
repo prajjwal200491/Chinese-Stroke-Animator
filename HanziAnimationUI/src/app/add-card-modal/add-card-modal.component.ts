@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../state/app.state';
 import { selectListDataWithCards } from '../state/app.selector';
 import { map, take } from 'rxjs/operators';
-import { addWordList } from '../state/app.actions';
+import { addWordList, updateWordList } from '../state/app.actions';
 
 @Component({
   selector: 'app-add-card-modal',
@@ -37,6 +37,7 @@ export class AddCardModalComponent implements OnInit, OnChanges {
       //characters: this.list.characters.map(c => c.value).join('')
     })
     this.cardForm.get('listname')?.disable();
+    this.cardForm.get('listname')?.setValue(decodeURIComponent(this.cardForm.get('listname')?.value));
   }
 
   ngOnChanges():void{
@@ -73,13 +74,13 @@ export class AddCardModalComponent implements OnInit, OnChanges {
       if(data && this.listName){
         let list = data[this.listName];
         let card: List = {
-              nameWithoutSpaces: this.cardForm.get('name')?.value.split(" ").join(""),
-              nameWithSpaces: this.cardForm.get('name')?.value,
+              cardname: this.cardForm.get('name')?.value.split(" ").join(""),
+              //nameWithSpaces: this.cardForm.get('name')?.value,
               selected: false,
               characters: this.wordList
         }
         let values:any={};
-        values[card.nameWithoutSpaces]= card;
+        values[card.cardname]= card;
         values={
           ...list.values, ...values
         }
@@ -88,7 +89,7 @@ export class AddCardModalComponent implements OnInit, OnChanges {
           nameWithSpaces: this.listName,
           values
         };
-        this.store.dispatch(addWordList({list: final})) ;
+        this.store.dispatch(updateWordList({listName: this.listName, listId: list.listId, cardName: card.cardname, characters: card.characters}));
       }
     })
   }

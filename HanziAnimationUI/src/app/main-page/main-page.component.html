@@ -46,7 +46,7 @@
       </button>
       <div class="dropdown-menu full-width" aria-labelledby="dropdownMenuButton">
         <ng-container *ngFor="let list of listData; let i=index">
-          <li *ngIf="i<=2" class="dropdown-item list-group-item" [ngClass]="{active: isActive(list.nameWithoutSpaces)}" href="#" (click)="onItemClick(list)">{{list.nameWithSpaces}}</li>
+          <li *ngIf="i<=2" class="dropdown-item list-group-item" [ngClass]="{active: isActive(list.listname)}" href="#" (click)="onItemClick(list)">{{list.listname}}</li>
         </ng-container>
       </div>
     </div>

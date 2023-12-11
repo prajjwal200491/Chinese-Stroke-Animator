@@ -46,6 +46,8 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
       if(this.header==='Update'){
         this.listForm.get('name')?.disable();
       this.listForm.get('cardName')?.disable();
+      this.listForm.get('name')?.setValue(decodeURIComponent(this.listForm.get('name')?.value));
+      this.listForm.get('cardName')?.setValue(decodeURIComponent(this.listForm.get('cardName')?.value));
       }
       
     })
@@ -72,7 +74,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.listForm.patchValue({
       //name: this.nameWithSpaces,
-      cardName: this.list?.nameWithSpaces,
+      cardName: this.list?.cardname,
       //characters: this.list.characters.map(c => c.value).join('')
     });
     this.store.select(selectListDataWithCards).pipe(take(1)).subscribe((res:any)=>{
@@ -85,7 +87,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   get name() {
-    return this.list.nameWithSpaces
+    return this.list.cardname
   }
 
   get words(){
@@ -136,13 +138,13 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
 
   onSubmit(): void {
     let card:List = {
-            nameWithoutSpaces: this.listForm.get('cardName')?.value.split(" ").join(""),
-            nameWithSpaces: this.listForm.get('cardName')?.value,
+            //cardname: this.listForm.get('cardName')?.value.split(" ").join(""),
+            cardname: encodeURIComponent(this.listForm.get('cardName')?.value),
             characters: this.wordList,
             selected: false
     };
     let values:any = {};
-    values[card.nameWithoutSpaces]=card;
+    values[card.cardname]=card;
     if (this.header === 'Create') {
 
       const final:ListData={
@@ -151,14 +153,14 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
         values
       
       }
-      this.store.dispatch(addWordList({list: final}));
+      this.store.dispatch(addWordList({listName: this.listForm.get('name')?.value, cardName: card.cardname, characters: card.characters}));
       //this.store.dispatch(reschuffleList({list:final}));
     }
     else{
       let dataref = {
         ...this.data.values
       };
-      delete dataref[this.list.nameWithoutSpaces];
+      delete dataref[this.list.cardname];
       values={
         ...dataref, ...values
       }
@@ -169,7 +171,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
         // ...this.list,
         // characters: this.wordList,
       }
-      this.store.dispatch(updateWordList({list: final}));
+      this.store.dispatch(updateWordList({listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters}));
       //this.store.dispatch(reschuffleList({list:final}));
     }
   }

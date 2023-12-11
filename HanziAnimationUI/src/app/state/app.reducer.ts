@@ -183,8 +183,8 @@ export const appReducer = createReducer(
 
         updatedCard.selected = true;
         updatedListData[listName]={
-          nameWithoutSpaces: updatedListData[listName].nameWithoutSpaces,
-          nameWithSpaces: updatedListData[listName].nameWithSpaces,
+          listname: updatedListData[listName].listname,
+          //nameWithSpaces: updatedListData[listName].nameWithSpaces,
           values:{
             ...updatedListData[listName].values,
             [cardName]: updatedCard,
@@ -215,8 +215,8 @@ on(setAllListsInactiveOnSearch, (state: AppState): AppState=>{
               }));
               updatedCard.selected = false;
               updatedListData[lname] = {
-                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
-                nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                listname: updatedListData[lname].listname,
+                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -262,8 +262,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             );
             updatedCard.selected = false;
               updatedListData[lname] = {
-                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
-                nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                listname: updatedListData[lname].listname,
+                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -277,8 +277,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             }));
             updatedCard.selected = false;
               updatedListData[lname] = {
-                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
-                nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                listname: updatedListData[lname].listname,
+                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -301,8 +301,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
               }));
               updatedCard.selected = false;
               updatedListData[lname] = {
-                nameWithoutSpaces: updatedListData[lname].nameWithoutSpaces,
-                nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                listname: updatedListData[lname].listname,
+                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -328,7 +328,7 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
     (state: AppState, operationResult): AppState => ({
       ...state,
       list: state.list.map((content) =>
-        content.nameWithoutSpaces === operationResult.list.nameWithoutSpaces
+        content.cardname === operationResult.list.cardname
           ? { ...content, characters: operationResult.list.characters }
           : content
       ),

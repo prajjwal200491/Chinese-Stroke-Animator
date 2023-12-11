@@ -31,7 +31,7 @@ export class ContentListViewComponent implements OnInit {
 
   onListSearch():void{
       this.customList$=this.customList$.pipe(
-        map(list=> list.filter(item=> item.nameWithoutSpaces.includes(this.listName)))
+        map(list=> list.filter(item=> item.cardname.includes(this.listName)))
       )
   }
 

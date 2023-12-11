@@ -69,10 +69,18 @@ export class AppEffects {
   addWordList$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(addWordList),
-      switchMap(({ list }) =>
-        this.characterService
-          .saveListData(list)
+      switchMap(({ listName, cardName, characters }) =>{
+        characters= characters.map(c=>{
+          return {
+            active: c.active,
+            characterName: c.value,
+            characterValue: c.value
+          }
+        })
+        return this.characterService
+          .saveListData(listName, cardName, characters)
           .pipe(map(() => loadWordsList()))
+      }
       )
     );
   });
@@ -80,10 +88,20 @@ export class AppEffects {
   updateWordList$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(updateWordList),
-      switchMap(({ list }) =>
-        this.characterService
-          .updateListData(list)
+      switchMap(({ listName, cardName,cardId, listId, characters }) =>{
+        characters= characters.map(c=>{
+          return {
+            active: c.active,
+            characterName: c.value,
+            characterValue: c.value
+          }
+        })
+        return this.characterService
+          .updateListData(listName, listId, cardId, cardName, characters)
           .pipe(map(() => loadWordsList()))
+
+      }
+        
       )
     );
   });
@@ -245,7 +263,7 @@ export class AppEffects {
 
   moveItem(allList: List[], list: List) {
     allList.forEach((item, index) => {
-      if (item.nameWithoutSpaces === list.nameWithoutSpaces) {
+      if (item.cardname === list.cardname) {
         allList.splice(index, 1);
         allList.splice(0, 0, list);
       }

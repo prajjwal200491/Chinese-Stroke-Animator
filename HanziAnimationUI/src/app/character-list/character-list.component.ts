@@ -29,8 +29,9 @@ selectedListValues:any;
   ngOnChanges():void{
     this.store.select(selectListDataWithCards).subscribe(res=>{
       if(res && this.listname){
-        this.selectedList=Object.values(res).filter(list=>{
-          return list.nameWithoutSpaces === this.listname
+        const values = Object.values(res);
+        this.selectedList=values.filter(list=>{
+          return list.listname === this.listname
         });
         this.selectedListValues=Object.values(this.selectedList[0].values)
       }

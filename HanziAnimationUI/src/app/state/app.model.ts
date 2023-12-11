@@ -10,20 +10,24 @@ export interface CharacterProperties {
 }
 
 export interface List{
-    nameWithoutSpaces: string;
-    nameWithSpaces: string;
+    // nameWithoutSpaces: string;
+    // nameWithSpaces: string;
+    cardname :string;
     characters: Character[];
     selected: boolean;
+    cardId?: number;
 }
 
 export interface ListData {
     [key : string]:{
-        nameWithoutSpaces: string;
-        nameWithSpaces: string;
+        // nameWithoutSpaces: string;
+        // nameWithSpaces: string;
+        listname: string;
         values: {
             [key: string] :List
         };
         isSelectedList?:boolean;
+        listId?:number
     }
     // name: any;
     // values: List;

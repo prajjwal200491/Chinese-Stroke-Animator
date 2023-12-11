@@ -22,7 +22,7 @@ listValues:any;
    }
   ngOnChanges(changes: SimpleChanges): void {
     if(this.list){
-this.listValues = Object.values(this.list.values)
+      this.listValues = Object.values(this.list.values)
     }
   }
 

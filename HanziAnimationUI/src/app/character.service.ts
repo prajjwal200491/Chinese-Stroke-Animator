@@ -58,33 +58,48 @@ export class CharacterService {
   }
 
   saveList(list:List): Observable<string>{
-     const saveRef=set(ref(this.database, 'lists/' + list.nameWithoutSpaces), list).then(()=>{
+     const saveRef=set(ref(this.database, 'lists/' + list.cardname), list).then(()=>{
       return 'successfully saved'
     });
     return from(saveRef);
   }
 
   updateList(list:List): Observable<string>{
-     const updateRef=update(ref(this.database, 'lists/' + list.nameWithoutSpaces), list).then(()=>{
+     const updateRef=update(ref(this.database, 'lists/' + list.cardname), list).then(()=>{
       return 'successfully updated'
     });
     return from(updateRef);
   }
 
-  saveListData(listData:ListData): Observable<string>{
-     const saveRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
-      return 'successfully saved'
-    });
-    return from(saveRef);
+  saveListData(listName: string, cardName: string, characters: any[]): Observable<any>{
+    const data = {
+      'listName': listName,
+      'cardName': cardName,
+      'characters':characters
+    };
+    return this.http.post('http://localhost:3000/api/lists/addWithCardsAndCharacters', data);
+    //  const saveRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
+    //   return 'successfully saved'
+    // });
+    // return from(saveRef);
+
   }
 
   
 
-  updateListData(listData:ListData): Observable<string>{
-     const updateRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
-      return 'successfully updated'
-    });
-    return from(updateRef);
+  updateListData(listName: string, listId:number, cardId:number|undefined=undefined, cardName: string, characters: any[]): Observable<any>{
+    const data = {
+      'listName': listName,
+      'listId': listId,
+      'cardName': cardName,
+      'cardId':cardId,
+      'characters': characters
+    };
+    return this.http.put('http://localhost:3000/api/lists/updateWithListCardsAndCharacters',data);
+    //  const updateRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
+    //   return 'successfully updated'
+    // });
+    // return from(updateRef);
   }
 
   
@@ -97,10 +112,12 @@ export class CharacterService {
   // }
   getList(): Observable<any>{
     return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/lists.json')
+    //return this.http.get('http://localhost:3000/api/lists');
   }
 
   getListData():Observable<any>{
-    return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/listData.json')
+    //return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/listData.json')
+    return this.http.get('http://localhost:3000/api/lists');
   }
 
   saveListChanges(listData:ListData):Observable<string>{
