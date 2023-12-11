@@ -21,9 +21,6 @@ import { CustomListComponent } from './shared/components/custom-list/custom-list
 import { ModalComponent } from './shared/components/modal/modal.component';
 import { ContentListViewComponent } from './shared/content-list-view/content-list-view.component';
 import { GroupCharactersComponent } from './shared/components/group-characters/group-characters.component';
-import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
-import { environment } from '../environments/environment';
-import { provideDatabase,getDatabase } from '@angular/fire/database';
 import { ListComponent } from './list/list.component';
 import { ListWrapprComponent } from './list-wrappr/list-wrappr.component';
 import { AddCardModalComponent } from './add-card-modal/add-card-modal.component';
@@ -60,7 +57,7 @@ import { AddCardModalComponent } from './add-card-modal/add-card-modal.component
     }),
     EffectsModule.forRoot([AppEffects]),
     //provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideDatabase(() => getDatabase()),
+    //provideDatabase(() => getDatabase()),
   ],
   providers: [],
   bootstrap: [AppComponent]

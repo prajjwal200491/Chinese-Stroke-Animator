@@ -153,9 +153,7 @@ export class AppEffects {
           return this.actions$.pipe(
               ofType(moveListToTopEnded),
               map(({list})=> {
-                  this.characterService.saveListChanges(list).pipe(
-                    map(()=> loadWordsListData())
-                  )
+                  this.characterService.saveListChanges(list)
               }
               )
           )

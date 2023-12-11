@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Database, onValue, ref, set, update } from '@angular/fire/database';
+import { onValue, ref, set, update } from '@angular/fire/database';
 import HanziWriter from 'hanzi-writer';
 import { from, Observable, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -15,7 +15,7 @@ export class CharacterService {
   private writerHanzi= new ReplaySubject<HanziWriter>(1);
   private apiUrl = environment.apiUrl;
 
-  constructor(private readonly http: HttpClient, private readonly database: Database) { }
+  constructor(private readonly http: HttpClient) { }
 
   setHanziWriter(writer: HanziWriter){
     this.writerHanzi.next(writer);
@@ -59,18 +59,18 @@ export class CharacterService {
     this.writer._options.strokeAnimationSpeed= speed
   }
 
-  saveList(list:List): Observable<string>{
-     const saveRef=set(ref(this.database, 'lists/' + list.cardname), list).then(()=>{
-      return 'successfully saved'
-    });
-    return from(saveRef);
+  saveList(list:List): void{
+    //  const saveRef=set(ref(this.database, 'lists/' + list.cardname), list).then(()=>{
+    //   return 'successfully saved'
+    // });
+    // return from(saveRef);
   }
 
-  updateList(list:List): Observable<string>{
-     const updateRef=update(ref(this.database, 'lists/' + list.cardname), list).then(()=>{
-      return 'successfully updated'
-    });
-    return from(updateRef);
+  updateList(list:List): void{
+    //  const updateRef=update(ref(this.database, 'lists/' + list.cardname), list).then(()=>{
+    //   return 'successfully updated'
+    // });
+    // return from(updateRef);
   }
 
   saveListData(listName: string, cardName: string, characters: any[]): Observable<any>{
@@ -123,11 +123,11 @@ export class CharacterService {
     return this.http.get(`${this.apiUrl}/api/lists`);
   }
 
-  saveListChanges(listData:ListData):Observable<string>{
-    const saveRef=set(ref(this.database, '/'+ 'listData'), listData).then(()=>{
-      return 'successfully saved'
-    });
-    return from(saveRef);
+  saveListChanges(listData:ListData):void{
+    // const saveRef=set(ref(this.database, '/'+ 'listData'), listData).then(()=>{
+    //   return 'successfully saved'
+    // });
+    // return from(saveRef);
  }
  
 
