@@ -59,7 +59,7 @@ import { AddCardModalComponent } from './add-card-modal/add-card-modal.component
       autoPause: true, // Pauses recording actions and state changes when the extension window is not open
     }),
     EffectsModule.forRoot([AppEffects]),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    //provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideDatabase(() => getDatabase()),
   ],
   providers: [],
