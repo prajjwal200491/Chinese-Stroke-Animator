@@ -2,6 +2,7 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+
 export const environment = {
   apiUrl:'https://chinese-animator-webapp.azurewebsites.net',
   // firebase: {
