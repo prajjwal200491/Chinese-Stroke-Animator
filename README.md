@@ -1,1 +1,1 @@
-# HanziAnimation
+# Chinese-Stroke-Animator
