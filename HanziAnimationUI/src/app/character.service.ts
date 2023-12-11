@@ -5,13 +5,15 @@ import HanziWriter from 'hanzi-writer';
 import { from, Observable, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Character, CharacterProperties, List, ListData } from './state/app.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CharacterService {
   private writer!: HanziWriter;
-  private writerHanzi= new ReplaySubject<HanziWriter>(1)
+  private writerHanzi= new ReplaySubject<HanziWriter>(1);
+  private apiUrl = environment.apiUrl;
 
   constructor(private readonly http: HttpClient, private readonly database: Database) { }
 
@@ -77,7 +79,7 @@ export class CharacterService {
       'cardName': cardName,
       'characters':characters
     };
-    return this.http.post('http://localhost:3000/api/lists/addWithCardsAndCharacters', data);
+    return this.http.post(`${this.apiUrl}/api/lists/addWithCardsAndCharacters`, data);
     //  const saveRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
     //   return 'successfully saved'
     // });
@@ -95,7 +97,7 @@ export class CharacterService {
       'cardId':cardId,
       'characters': characters
     };
-    return this.http.put('http://localhost:3000/api/lists/updateWithListCardsAndCharacters',data);
+    return this.http.put(`${this.apiUrl}/api/lists/updateWithListCardsAndCharacters`,data);
     //  const updateRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
     //   return 'successfully updated'
     // });
@@ -117,7 +119,8 @@ export class CharacterService {
 
   getListData():Observable<any>{
     //return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/listData.json')
-    return this.http.get('http://localhost:3000/api/lists');
+    //return this.http.get('http://localhost:3000/api/lists');
+    return this.http.get(`${this.apiUrl}/api/lists`);
   }
 
   saveListChanges(listData:ListData):Observable<string>{

@@ -3,6 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  apiUrl:'https://chinese-animator-webapp.azurewebsites.net',
   // firebase: {
   //   projectId: 'hanzi-characters',
   //   appId: '1:794755778015:web:c8013f15d4ff713086b06a',
