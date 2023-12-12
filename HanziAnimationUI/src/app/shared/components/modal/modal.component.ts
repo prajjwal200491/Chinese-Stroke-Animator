@@ -27,6 +27,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() openModal!: boolean;
   listForm: FormGroup;
   wordList: Character[]=[];
+  deletedWordList: Character[]=[];
   latestCardName: string='';
   data:any;
   isDisabledList=true;
@@ -137,6 +138,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
 
 
   onSubmit(): void {
+     this.deletedWordList= this.list.characters.filter(c=> !this.wordList.find(item=> item.value===c.value));
     let card:List = {
             //cardname: this.listForm.get('cardName')?.value.split(" ").join(""),
             cardname: encodeURIComponent(this.listForm.get('cardName')?.value),
@@ -171,7 +173,12 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
         // ...this.list,
         // characters: this.wordList,
       }
-      this.store.dispatch(updateWordList({listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters}));
+      if(this.deletedWordList.length>0){
+        this.store.dispatch(updateWordList({listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters, deletedCharacters: this.deletedWordList}));
+      }
+      else{
+        this.store.dispatch(updateWordList({listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters}));
+      }
       //this.store.dispatch(reschuffleList({list:final}));
     }
   }

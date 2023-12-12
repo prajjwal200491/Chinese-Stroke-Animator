@@ -7,7 +7,7 @@ router.put('/api/lists/updateWithListCardsAndCharacters', async (req, res)=>{
     try{
 
     debugger;
-    const {listName, listId, cardName, cardId, characters} = req.body;
+    const {listName, listId, cardName, cardId, characters, deletedCharacters} = req.body;
     if(!listName || !listId || !cardName || !Array.isArray(characters)){
         return res.status(400).json({error: 'Invalid input'});
     }
@@ -59,6 +59,22 @@ router.put('/api/lists/updateWithListCardsAndCharacters', async (req, res)=>{
                     .query('INSERT INTO Characters (cardId, characterName, active, characterValue) VALUES (@cardId, @characterName, @active, @characterValue)');
                     }
 
+                }
+                if(deletedCharacters?.length>0){
+                    for(const character of deletedCharacters){
+                        const characterResult = await transaction   
+                        .request()
+                        .input('cardId', sql.Int, cardId)
+                        .input('characterName', sql.NVarChar(100), character.characterName)
+                        .query(`SELECT characterName FROM Characters WHERE characterName=@characterName AND cardId=@cardId`);
+                        if(characterResult?.recordset?.length>0){
+                            await transaction
+                            .request()
+                            .input('cardId', sql.Int, cardId)
+                            .input('characterName', sql.NVarChar(100), character.characterName)
+                            .query(`DELETE FROM Characters WHERE characterName=@characterName AND cardId=@cardId`);
+                        }
+                    }
                 }
             }   
             else{

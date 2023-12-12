@@ -89,15 +89,17 @@ export class CharacterService {
 
   
 
-  updateListData(listName: string, listId:number, cardId:number|undefined=undefined, cardName: string, characters: any[]): Observable<any>{
+  updateListData(listName: string, listId:number, cardId:number|undefined=undefined, cardName: string, characters: any[], deletedCharacters?: any[]): Observable<any>{
     const data = {
       'listName': listName,
       'listId': listId,
       'cardName': cardName,
       'cardId':cardId,
-      'characters': characters
+      'characters': characters,
+      'deletedCharacters': deletedCharacters
     };
-    return this.http.put(`${this.apiUrl}/api/lists/updateWithListCardsAndCharacters`,data);
+   // return this.http.put(`${this.apiUrl}/api/lists/updateWithListCardsAndCharacters`,data);
+    return this.http.put(`http://localhost:3000/api/lists/updateWithListCardsAndCharacters`,data);
     //  const updateRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{
     //   return 'successfully updated'
     // });
@@ -119,8 +121,8 @@ export class CharacterService {
 
   getListData():Observable<any>{
     //return this.http.get('https://fir-test-application-d5087-default-rtdb.firebaseio.com/listData.json')
-    //return this.http.get('http://localhost:3000/api/lists');
-    return this.http.get(`${this.apiUrl}/api/lists`);
+    return this.http.get('http://localhost:3000/api/lists');
+    //return this.http.get(`${this.apiUrl}/api/lists`);
   }
 
   saveListChanges(listData:ListData):void{

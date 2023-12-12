@@ -88,7 +88,7 @@ export class AppEffects {
   updateWordList$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(updateWordList),
-      switchMap(({ listName, cardName,cardId, listId, characters }) =>{
+      switchMap(({ listName, cardName,cardId, listId, characters, deletedCharacters }) =>{
         characters= characters.map(c=>{
           return {
             active: c.active,
@@ -96,8 +96,18 @@ export class AppEffects {
             characterValue: c.value
           }
         })
+        if(deletedCharacters && deletedCharacters.length>0){
+          deletedCharacters= deletedCharacters?.map(c=>{
+            return {
+              active: c.active,
+              characterName: c.value,
+              characterValue: c.value
+            }
+          })
+        }
+        
         return this.characterService
-          .updateListData(listName, listId, cardId, cardName, characters)
+          .updateListData(listName, listId, cardId, cardName, characters, deletedCharacters)
           .pipe(map(() => loadWordsList()))
 
       }
