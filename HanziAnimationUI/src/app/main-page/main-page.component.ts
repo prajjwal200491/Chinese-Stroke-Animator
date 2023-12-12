@@ -7,6 +7,7 @@ import { loadCharacter, loadWordsList, loadWordsListData, searchCharacter, setAl
 import { selectLatestCharacter, selectListDataWithCards, selectRecentlyTypedCharacters } from '../state/app.selector';
 import { AppState } from '../state/app.state';
 import { ListData } from '../state/app.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-page',
@@ -28,7 +29,7 @@ export class MainPageComponent implements OnInit {
   selected:any;
   nameWithSpaces:any;
   displayName:any='Lists';
-  constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService) {
+  constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService, private readonly router:Router) {
    }
 
   ngOnInit(): void {
@@ -84,6 +85,12 @@ export class MainPageComponent implements OnInit {
   onClick(character: string){
     this.characterService.destroyCharacter(this.writer);
     this.store.dispatch(updateCharacter({character: character}))
+  }
+
+  navigateToMoreList():void{
+    this.router.navigate(['/lists']).then(() => {
+      window.location.reload();
+    });
   }
 
   onSearchDisabled(){

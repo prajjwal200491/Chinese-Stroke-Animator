@@ -64,7 +64,7 @@
 
       <app-character-list [listname]="listname"></app-character-list>
       <div class="more-list">
-        <button [routerLink]="['/lists']" class="btn btn-primary"> More List...</button>
+        <button (click)="navigateToMoreList()" class="btn btn-primary"> More List...</button>
       </div>
   </div>
 </div>

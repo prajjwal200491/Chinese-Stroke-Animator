@@ -37,8 +37,10 @@ export class ContentListViewComponent implements OnInit {
   }
 
   goBack(){
-    //this.location.back();
-    this.router.navigate(['']);
+    // remove this code after fix
+    this.router.navigate(['']).then(() => {
+      window.location.reload();
+    });
   }
 
   reschuffleList(list:List){
