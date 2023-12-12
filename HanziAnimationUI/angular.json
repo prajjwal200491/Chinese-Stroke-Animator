@@ -31,7 +31,9 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff",
+              "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
             ],
             "styles": [
               "src/styles.scss"
