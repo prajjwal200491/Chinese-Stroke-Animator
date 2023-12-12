@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -21,7 +22,7 @@ export class ContentListViewComponent implements OnInit {
   openModal=false;
 
   constructor(private readonly store: Store<AppState>, private readonly location: Location, 
-    private readonly ms: ModalService) { 
+    private readonly ms: ModalService, private readonly router:Router) { 
   }
 
   ngOnInit(): void {
@@ -36,7 +37,8 @@ export class ContentListViewComponent implements OnInit {
   }
 
   goBack(){
-    this.location.back();
+    //this.location.back();
+    this.router.navigate(['']);
   }
 
   reschuffleList(list:List){

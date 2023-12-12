@@ -138,7 +138,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
 
 
   onSubmit(): void {
-     this.deletedWordList= this.list.characters.filter(c=> !this.wordList.find(item=> item.value===c.value));
+     this.deletedWordList= this.list?.characters.filter(c=> !this.wordList.find(item=> item.value===c.value));
     let card:List = {
             //cardname: this.listForm.get('cardName')?.value.split(" ").join(""),
             cardname: encodeURIComponent(this.listForm.get('cardName')?.value),
