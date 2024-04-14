@@ -8,7 +8,7 @@
     <div class="scrollable-body" #list>
         <ng-container *ngIf="selectedListValues && selectedListValues.length>0">
     <div *ngFor="let list of selectedListValues" class="custom-list-wrapper">
-        <app-custom-list [list]="list" [listName]="listname" (moveList)="reschuffleList($event)"></app-custom-list>
+        <app-custom-list [list]="list" [listName]="listname" [nameWithSpaces]="listname" (moveList)="reschuffleList($event)"></app-custom-list>
     </div>
 </ng-container>
 </div>

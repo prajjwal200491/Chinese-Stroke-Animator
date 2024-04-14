@@ -1,0 +1,42 @@
+.card-container{
+    display: flex;
+}
+canvas {
+    background: #DDEAED;
+}
+.svg-container {
+    //position: absolute;
+    // top: 0;
+    // left: 0;
+    //pointer-events: none; /* So that the SVG doesn't intercept mouse events */
+    opacity: 0.6;
+    background: #DDEAED;
+}
+.tools{
+    display: flex;
+    font-size: small;
+    & div{
+        padding: 0 0.5rem;
+    }
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.bi-x-circle{
+    font-size: large;
+    cursor: pointer;
+}
+.bi-x-circle:active { 
+    transform: scale(0.98); 
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+}
+.bi-eye, .bi-eye-slash{
+    font-size: large;
+    cursor: pointer;
+}
+.bi-eye:active, .bi-eye-slash:active{
+    transform: scale(0.98); 
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+}
+.actions{
+    display: flex;
+}

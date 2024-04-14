@@ -120,3 +120,17 @@
     }
   }
 
+  .toggle-modes{
+    margin-bottom: 1rem;
+    display: flex;
+    & .custom-switch{
+        padding-right: 0.5rem;
+    }
+  }
+  .custom-control .custom-control-input{
+    cursor: pointer;
+  }
+  .custom-control-label{
+    font-size: small;
+  }
+

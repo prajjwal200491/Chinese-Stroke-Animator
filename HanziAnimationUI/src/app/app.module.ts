@@ -24,6 +24,14 @@ import { GroupCharactersComponent } from './shared/components/group-characters/g
 import { ListComponent } from './list/list.component';
 import { ListWrapprComponent } from './list-wrappr/list-wrappr.component';
 import { AddCardModalComponent } from './add-card-modal/add-card-modal.component';
+import { MultipleCharactersCopyModeCardComponent } from './copy-mode-components/multiple-characters-copy-mode-card/multiple-characters-copy-mode-card.component';
+import { CopyModeComponent } from './copy-mode-components/copy-mode/copy-mode.component';
+import { TestModeComponent } from './test-mode-components/test-mode/test-mode.component';
+import { MultipleCharactersTestModeCardComponent } from './test-mode-components/multiple-characters-test-mode-card/multiple-characters-test-mode-card.component';
+import { DrawingCanvasComponent } from './drawing-canvas/drawing-canvas.component';
+import { AllWordsCardsComponent } from './all-words-cards/all-words-cards.component';
+import { WordCardComponent } from './all-words-cards/word-card/word-card.component';
+
 
 @NgModule({
   declarations: [
@@ -41,7 +49,14 @@ import { AddCardModalComponent } from './add-card-modal/add-card-modal.component
     GroupCharactersComponent,
     ListComponent,
     ListWrapprComponent,
-    AddCardModalComponent
+    AddCardModalComponent,
+    CopyModeComponent,
+    MultipleCharactersCopyModeCardComponent,
+    TestModeComponent,
+    MultipleCharactersTestModeCardComponent,
+    DrawingCanvasComponent,
+    AllWordsCardsComponent,
+    WordCardComponent
   ],
   imports: [
     BrowserModule,

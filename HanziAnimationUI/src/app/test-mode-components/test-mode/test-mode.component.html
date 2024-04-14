@@ -1,0 +1,54 @@
+<ng-container *ngIf="isSingleCharacter ; else groupsView">
+    <div class="test-character-container">
+        <div style="margin: 1rem;">
+            <div class="actions">
+            <div *ngIf="toggleShowHide" class="show-hide-character"> <i (click)="showHideCharacter()"
+                    class="bi bi-eye"></i>
+            </div>
+            <div *ngIf="!toggleShowHide" class="show-hide-character"> <i (click)="showHideCharacter()"
+                    class="bi bi-eye-slash"></i></div>
+    <div style="margin-left: 1rem;"><button class="btn btn-primary" (click)="onCompare()">Compare</button></div>
+                </div>
+            <div class="svg-container" id="{{characterId}}">
+            </div>
+        </div>
+        <div style="margin-top: 0.5rem;">
+            <div class="tools">
+                <div>
+                    <div class="reset"><i (click)="resetDrawing()" class="bi bi-x-circle"></i></div>
+                </div>
+
+            </div>
+            <canvas #canvas id="canvas" width="300" height="300" (mousedown)="startDrawing($event)"
+                (mousemove)="draw($event)" (mouseup)="stopDrawing()" (mouseout)="stopDrawing()"
+                (mouseleave)="stopDrawing()">
+            </canvas>
+        </div>
+    </div>
+    <!-- <button class="btn btn-primary" (click)="createHanziQuiz()">Play Quiz</button>
+<div class="quiz-mode">
+    <div id="quiz-mode"></div>
+    <textarea style="font-size: smaller;"  name="" id="" cols="50" rows="6">
+        Oh no! you made a mistake on stroke {{strokeData?.strokeNum}}
+        You've made {{strokeData?.mistakesOnStroke}} mistakes on this stroke so far
+        You've made {{strokeData?.totalMistakes}} total mistakes on this quiz
+        There are {{strokeData?.strokesRemaining}} strokes remaining in this character
+        Yes!! You got stroke {{strokeData?.strokeNum}} correct!
+        You made {{strokeData?.mistakesOnStroke}} mistakes on this stroke
+        You've made {{strokeData?.totalMistakes}} total mistakes on this quiz
+        There are {{strokeData?.strokesRemaining}} strokes remaining in this character
+        You did it! You finished drawing {{summaryData?.character}}
+        You made {{summaryData?.totalMistakes}} total mistakes on this quiz
+    </textarea>
+</div> -->
+</ng-container>
+<ng-template #groupsView>
+    <div class="multiple-cards-container">
+        <ng-container *ngFor="let g of groups; let i=index">
+
+            <app-multiple-characters-test-mode-card [character]="g"
+                [characterIndex]="i"></app-multiple-characters-test-mode-card>
+
+        </ng-container>
+    </div>
+</ng-template>

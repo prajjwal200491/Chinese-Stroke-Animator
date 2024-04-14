@@ -1,0 +1,36 @@
+.words-card-container{
+    background: #ECECEC;
+    display: flex;
+    padding: 1rem;
+    flex-wrap: wrap;
+}
+.actions{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.bi-plus-lg, .bi-share-fill{
+    font-size: 22px;
+}
+.new-folder, .share{
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
+.bubble-btn{
+    transition: transform 0.3s;
+   }
+   .bubble-btn:hover {
+    animation: bubble 0.4s ease-out;
+  }
+  @keyframes bubble {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }

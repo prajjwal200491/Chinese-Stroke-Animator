@@ -1,0 +1,27 @@
+<ng-container *ngIf="isSingleCharacter ; else groupsView">
+    <div class="tools">
+        <div>
+            Color: <input type="color" id="color" [(ngModel)]="color">
+        </div>
+        <div>
+            Brush: <input type="number" id="brushSize" min="1" max="50" [(ngModel)]="brushSize">
+        </div>
+        <div class="undo"> 
+            <i (click)="undo()" class="bi bi-arrow-counterclockwise"></i>
+        </div>
+        <div>
+            <div class="reset"><i (click)="resetDrawing()" class="bi bi-x-circle"></i></div>
+        </div>
+    </div>
+    <div #mysvg class="svg-container" id="{{characterId}}"></div>
+    <canvas #canvas id="canvas" width="300" height="300">
+    </canvas>
+</ng-container>
+<ng-template #groupsView>
+    <div class="multiple-cards-container">
+        <ng-container *ngFor="let g of groups; let i=index">
+            <app-multiple-characters-copy-mode-card [character]="g"
+                [characterIndex]="i"></app-multiple-characters-copy-mode-card>
+        </ng-container>
+    </div>
+</ng-template>

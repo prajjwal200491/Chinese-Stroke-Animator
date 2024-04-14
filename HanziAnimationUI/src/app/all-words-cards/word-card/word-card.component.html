@@ -1,0 +1,12 @@
+<div class="word-card" (click)="onItemClick(word)">
+    <div class="folder-icon">
+    <i *ngIf="!word.isSelectedList" class="bi bi-folder2"></i>
+    <i *ngIf="word.isSelectedList" class="bi bi-folder2-open"></i>
+</div>
+<div class="folder-text">
+    {{word.listname}}
+</div>
+<div class="check" *ngIf="word.isSelectedList">
+    <i class="bi bi-check-square-fill"></i>
+</div>
+</div>

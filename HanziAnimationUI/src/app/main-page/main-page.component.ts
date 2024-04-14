@@ -29,6 +29,8 @@ export class MainPageComponent implements OnInit {
   selected:any;
   nameWithSpaces:any;
   displayName:any='Lists';
+  isCopyMode=false;
+  isTestMode=false;
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService, private readonly router:Router) {
    }
 
@@ -104,6 +106,10 @@ export class MainPageComponent implements OnInit {
     this.nameWithSpaces = list.listname;
     this.displayName = this.nameWithSpaces;
   }
+  onHandleOnWordCardClick(word:any){
+    this.listname = word.listname;
+    this.nameWithSpaces = word.listName;
+  }
 
   isActive(item: any){
     return this.selected === item
@@ -120,6 +126,15 @@ export class MainPageComponent implements OnInit {
       }
     }
     return activeCharacter
+  }
+
+  toggleCopyMode():void{
+    this.isCopyMode=!this.isCopyMode;
+    this.isTestMode = this.isTestMode? !this.isTestMode: this.isTestMode
+  }
+  toggleTestMode():void{
+    this.isTestMode=!this.isTestMode;
+    this.isCopyMode = this.isCopyMode? !this.isCopyMode: this.isCopyMode
   }
 
 

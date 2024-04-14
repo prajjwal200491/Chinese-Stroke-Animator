@@ -1,3 +1,5 @@
+const CS='Server=tcp:hanzi-server.database.windows.net,1433;Initial Catalog=hanzi-list;Persist Security Info=False;User ID=prajjwal;Password=Acc3ntur3@bang;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;';
+const connectionstring = process.env.dbconnect||CS;
 const sql = require('mssql');
 const config = {
     user: 'prajjwal',
@@ -8,6 +10,7 @@ const config = {
       encrypt: true, // Use this if you're on Windows Azure
       enableArithAbort: true,
     },
+    connectionString: connectionstring
 };
 
 const poolPromise = new sql.ConnectionPool(config)

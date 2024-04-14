@@ -1,0 +1,33 @@
+canvas {
+    background: #DDEAED;
+}
+.svg-container {
+    position: absolute;
+    background: #DDEAED;
+    opacity: 0.6;
+}
+.tools{
+    display: flex;
+    font-size: small;
+    & div{
+        padding: 0 0.5rem;
+    }
+}
+.card-container{
+    margin: 0 1rem;
+    & .tools{
+        margin-bottom: 0.5rem;
+    }
+}
+.bi-x-circle, .bi-arrow-counterclockwise{
+    font-size: large;
+    cursor: pointer;
+}
+.bi-x-circle:active { 
+    transform: scale(0.98); 
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+} 
+.bi-arrow-counterclockwise:active { 
+    transform: scale(0.98); 
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+} 

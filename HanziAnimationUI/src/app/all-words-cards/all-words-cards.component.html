@@ -1,0 +1,31 @@
+<app-modal [modalId]="'listModal'" [header]="header" [nameWithSpaces]="nameWithSpaces"></app-modal>
+        <ul class="nav nav-tabs" id="tab-features" role="tablist">
+          <li class="nav-item"><a class="nav-link active" id="link1-features-12" href="#tab1-features-12" data-toggle="tab" role="tab" aria-selected="true">All Words</a></li>
+          <li class="nav-item"><a class="nav-link disabled" id="link2-features-12" href="#tab2-features-12" data-toggle="tab" role="tab" aria-selected="false">Exam Prep</a></li>
+        </ul>
+      <div class="tab-content" id="tabContent-features">
+        <div class="tab-pane fade active show" id="tab1-features-12" role="tabpanel" aria-labelledby="link1-features-12">
+            
+          <div class="words-card-container">
+            <div class="actions">
+                <div class="new-folder bubble-btn" data-toggle="modal" data-target="#listModal">
+                    <i class="bi bi-plus-lg" ></i>
+                    <div class="icon-text">New Folder</div>
+                </div>
+                <div class="share bubble-btn">
+                    <i class="bi bi-share-fill"></i>
+                    <div class="icon-text">Share</div>
+                </div>
+            </div>
+            <ng-container *ngIf="wordCards">
+                <ng-container *ngFor="let wc of wordCards; let i=index">
+                    <app-word-card *ngIf="i<6" [word]="wc" (onWordCardClick)="onHandleCardClick($event)"></app-word-card>
+                </ng-container>
+            </ng-container>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab2-features-12" role="tabpanel" aria-labelledby="link2-features-12">
+          Under Construction......
+        </div>
+        
+      </div>

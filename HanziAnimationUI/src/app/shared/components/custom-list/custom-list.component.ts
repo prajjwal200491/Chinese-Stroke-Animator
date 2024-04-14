@@ -5,6 +5,7 @@ import { CharacterService } from 'src/app/character.service';
 import { ModalService } from 'src/app/modal.service';
 import { loadRelatedWords, moveListToTop, setActiveCharacterList, shouldSelectList, updateCharacter, updateList } from 'src/app/state/app.actions';
 import { Character, List } from 'src/app/state/app.model';
+import { selectListDataWithCards } from 'src/app/state/app.selector';
 import { AppState } from 'src/app/state/app.state';
 
 @Component({
@@ -41,6 +42,9 @@ export class CustomListComponent implements OnInit, OnChanges {
   onClick(character: Character): void {
     this.store.dispatch(setActiveCharacterList({character:{active: true, value: character.value}, listName: this.listName, cardName: this.list.cardname}));
     this.store.dispatch(shouldSelectList({listname: this.listName}));
+    this.store.select(selectListDataWithCards).subscribe(r=>{
+      console.log(r)
+    })
     this.store.dispatch(moveListToTop({listname: this.listName}));
     if (this.router.url === '/lists') {
       this.router.navigate(['/']);

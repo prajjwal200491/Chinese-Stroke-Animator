@@ -1,0 +1,27 @@
+.bi-folder2, .bi-folder2-open{
+    color: #46A6FF;
+    font-size: 100px;
+}
+.word-card{
+    position: relative;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+.folder-text{
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    width: 60px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.bi-check-square-fill{
+    color: #FE9142;
+    font-size: 20px;
+}
+.check{
+    position: absolute;
+    top: 71%;
+    right: 13%;
+}

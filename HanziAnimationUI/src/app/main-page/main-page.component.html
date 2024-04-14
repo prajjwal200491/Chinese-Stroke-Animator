@@ -1,72 +1,115 @@
-<app-modal [modalId]="'listModal'" [header]="modalHeader" [nameWithSpaces]="nameWithSpaces"></app-modal>
+
 <div class="container">
   <div class="row">
-  <div class="col-8 column-left">
-  <div class="search-row">
-    <div class="search-bar">
-      <div class="form-group has-search" style="display: flex;">
-        <i class="bi bi-search"></i>
-        <input type="text" class="form-control" placeholder="Animate stroke order" [(ngModel)]="chineseTxt"
-             (keyup.enter)="textChange()">
-          <div class="btn btn-outline-secondary" [ngClass]="{'disable-element': onSearchDisabled()}" (click)="textChange()">Search</div>
+    <div class="col-7 column-left">
+      <div class="search-row">
+        <div class="search-bar">
+          <div class="form-group has-search" style="display: flex;">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" placeholder="Animate stroke order" [(ngModel)]="chineseTxt"
+              (keyup.enter)="textChange()">
+            <div class="btn btn-outline-secondary" [ngClass]="{'disable-element': onSearchDisabled()}"
+              (click)="textChange()">Search</div>
+          </div>
+        </div>
+      </div>
+      <div class="toggle-modes">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitchCopyMode" (change)="toggleCopyMode()" [checked]="isCopyMode">
+          <label class="custom-control-label" for="customSwitchCopyMode">Copy Mode</label>
+        </div>
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitchTestMode" (change)="toggleTestMode()" [checked]="isTestMode">
+          <label class="custom-control-label" for="customSwitchTestMode">Test Mode</label>
+        </div>
+      </div>
+
+
+      <ng-container *ngIf="(isCopyMode || isTestMode) ; else mainView">
+      <!----------------------------- Copy Mode ----------------------------------------->
+        <ng-container *ngIf="isCopyMode && !isTestMode">
+          <ng-container *ngIf="groupCharacters.length>1 ; else singleCharacter">
+            <app-copy-mode [groups]="groupCharacters"></app-copy-mode>
+          </ng-container>
+          <ng-template #singleCharacter>
+            <app-copy-mode [singleCharacter]="latestCharacter"></app-copy-mode>
+          </ng-template>
+        </ng-container>
+      <!----------------------------- Copy Mode ----------------------------------------->
+
+      <!----------------------------- Test Mode ----------------------------------------->
+        <ng-container *ngIf="isTestMode && !isCopyMode">
+          <ng-container *ngIf="groupCharacters.length>1 ; else singleCharacter">
+            <app-test-mode [groups]="groupCharacters"></app-test-mode>
+          </ng-container>
+          <ng-template #singleCharacter>
+            <app-test-mode [singleCharacter]="latestCharacter"></app-test-mode>
+          </ng-template>
+        </ng-container>
+        <!----------------------------- Test Mode ----------------------------------------->
+      </ng-container>
+
+      <!----------------------------- Main View ----------------------------------------->
+      <ng-template #mainView>
+        <ng-container *ngIf="!isCopyMode && !isTestMode">
+          <ng-container *ngIf="groupCharacters.length>1 ; else singleCharacter">
+            <app-group-characters [characters]="groupCharacters">
+            </app-group-characters>
+          </ng-container>
+          <ng-template #singleCharacter>
+            <app-character [chineseTxt]="latestCharacter">
+              <app-character-decomposition></app-character-decomposition>
+            </app-character><br>
+            <app-character-strokes [chineseTxt]="latestCharacter"></app-character-strokes>
+          </ng-template>
+        </ng-container>
+      </ng-template>
+      <!----------------------------- Main View ----------------------------------------->
+
+
+    </div>
+
+    <div class="col-5 column-right">
+      <app-all-words-cards [wordCards]="listData" [header]="modalHeader" [nameWithSpaces]="nameWithSpaces" (onWordCardClick)="onHandleOnWordCardClick($event)"></app-all-words-cards>
+      <app-character-list [listname]="listname"></app-character-list>
+      <div class="more-list">
+        <button (click)="navigateToMoreList()" class="btn btn-primary"> More List...</button>
       </div>
     </div>
-  </div>
-  <ng-container *ngIf="groupCharacters.length>1 ; else singleCharacter">
-    <app-group-characters [characters]="groupCharacters">
-    </app-group-characters>
-  </ng-container>
-  <ng-template #singleCharacter>
-    <app-character  [chineseTxt]="latestCharacter">
-      <app-character-decomposition></app-character-decomposition>
-    </app-character><br>
-    <app-character-strokes [chineseTxt]="latestCharacter"></app-character-strokes> 
-  </ng-template>
-  
-  </div>
-  <div class="col-4 column-right">
-    <div class="recently-typed">
+
+    <!-- <div class="col-4 column-right">
+      <div class="recently-typed">
         <h5>Recently typed words</h5>
         <hr>
         <span *ngFor="let character of recentlyTyped$ | async" (click)="onClick(character)">
           {{character}}&nbsp;
         </span>
       </div>
-      <!-- <div class="more-list">
-        <button [routerLink]="['/lists']" class="btn btn-primary"> More List...</button>
-      </div> -->
       <div class="sticky-header">
         <h6>Groups</h6>
         <button class="btn bubble-btn" data-toggle="modal" data-target="#listModal">+New List</button>
-    </div>
-
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle full-width" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {{displayName}}
-      </button>
-      <div class="dropdown-menu full-width" aria-labelledby="dropdownMenuButton">
-        <ng-container *ngFor="let list of listData; let i=index">
-          <li *ngIf="i<=2" class="dropdown-item list-group-item" [ngClass]="{active: isActive(list.listname)}" href="#" (click)="onItemClick(list)">{{list.listname}}</li>
-        </ng-container>
       </div>
-    </div>
-        <!-- <ul class="list-group">
-          <ng-container *ngFor="let list of listData; let i=index">
-            <li *ngIf="i<=2" [ngClass]="{active: isActive(list.nameWithoutSpaces)}" class="list-group-item" aria-current="true" (click)="onItemClick(list)">
-              <div>{{list.nameWithSpaces}}</div>
-              <div class="share"><a>share</a></div>
-            </li>
-          </ng-container>
-          
-        </ul> -->
 
-        
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle full-width" type="button" id="dropdownMenuButton"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{displayName}}
+        </button>
+        <div class="dropdown-menu full-width" aria-labelledby="dropdownMenuButton">
+          <ng-container *ngFor="let list of listData; let i=index">
+            <li *ngIf="i<=2" class="dropdown-item list-group-item" [ngClass]="{active: isActive(list.listname)}"
+              href="#" (click)="onItemClick(list)">{{list.listname}}</li>
+          </ng-container>
+        </div>
+      </div>
 
       <app-character-list [listname]="listname"></app-character-list>
       <div class="more-list">
         <button (click)="navigateToMoreList()" class="btn btn-primary"> More List...</button>
       </div>
+    </div> -->
+
+
   </div>
-</div>
 </div>
 <div id='test'></div>

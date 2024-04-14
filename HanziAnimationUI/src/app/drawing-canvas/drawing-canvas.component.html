@@ -1,0 +1,12 @@
+Starts here
+<!-- <canvas #canvasElement width="300" height="300" (mousedown)="startDrawing($event)" (mousemove)="draw($event)" (mouseup)="endDrawing()"></canvas>
+<button (click)="play()">Play</button>
+<button (click)="clear()">Clear</button> -->
+<canvas id="canvas1" #canvasElement width="500" height="400" style="border: medium; border-color: #00F; border-style: solid"></canvas>
+
+<div>
+  <button (click)="toggleRecording()">{{ recording ? 'Stop' : 'Record' }}</button>
+  <button (click)="togglePlayback()">{{ playback ? 'Stop' : 'Play' }}</button>
+  <button (click)="togglePause()">{{ paused ? 'Resume' : 'Pause' }}</button>
+  <button (click)="clearCanvas()">Clear</button>
+</div>
