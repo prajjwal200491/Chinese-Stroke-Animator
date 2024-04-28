@@ -1,4 +1,4 @@
 {
-    "appService.defaultWebAppToDeploy": "/subscriptions/9cd2dc81-bcc9-423d-ab88-3a88539322ff/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/chinese-animator-webapp",
-    "appService.deploySubpath": "Backend"
+    "appService.defaultWebAppToDeploy": "/subscriptions/9cd2dc81-bcc9-423d-ab88-3a88539322ff/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/chinese-animator-UI-webapp",
+    "appService.deploySubpath": "HanziAnimationUI\\dist\\HanziAnimationUI"
 }
