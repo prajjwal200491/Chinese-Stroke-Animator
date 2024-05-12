@@ -1,6 +1,6 @@
 <ng-container *ngIf="isSingleCharacter ; else groupsView">
     <div class="test-character-container">
-        <div style="margin: 1rem;">
+        <div class="test-container-div" >
             <div class="actions">
             <div *ngIf="toggleShowHide" class="show-hide-character"> <i (click)="showHideCharacter()"
                     class="bi bi-eye"></i>
@@ -21,7 +21,9 @@
             </div>
             <canvas #canvas id="canvas" width="300" height="300" (mousedown)="startDrawing($event)"
                 (mousemove)="draw($event)" (mouseup)="stopDrawing()" (mouseout)="stopDrawing()"
-                (mouseleave)="stopDrawing()">
+                (mouseleave)="stopDrawing()" (touchstart)="startDrawing($event)"
+                (touchmove)="draw($event)" (touchend)="stopDrawing()" (touchcancel)="stopDrawing()"
+                (touchcancel)="stopDrawing()">
             </canvas>
         </div>
     </div>

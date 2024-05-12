@@ -125,16 +125,27 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
     drawNextSegment();
   }
 
-  private recordDrawing(event: MouseEvent) {
+  private recordDrawing(event: MouseEvent | TouchEvent) {
     if (this.isRecording && this.isDrawing) {
       const rect = this.canvas.nativeElement.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      let x, y;
+      if(event instanceof MouseEvent){
+         x = event.clientX - rect.left;
+         y = event.clientY - rect.top;
+      }
+      if (event instanceof TouchEvent) {
+        const touch = event.touches[0];
+        x = touch.clientX - rect.left;
+        y = touch.clientY - rect.top;
+      }
+      
       const time = Date.now();
-
-      this.currentStroke.push({ x, y, time });
+      if(x && y){
+        this.currentStroke.push({ x, y, time });
 
       this.drawPoint(x, y);
+      }
+      
     }
   }
 
@@ -163,10 +174,22 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
     };
     this.writer = HanziWriter.create(id, character, properties);
   }
-  startDrawing(e: MouseEvent) {
+  startDrawing(e: MouseEvent | TouchEvent) {
+    if(e instanceof TouchEvent){
+      const clientX = e.touches[0].clientX
+    const clientY = e.touches[0].clientY
     this.isDrawing = true;
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    [this.lastX, this.lastY] = [clientX-rect.left, clientY-rect.top];
+    this.startRecording();
+    }
+    if(e instanceof MouseEvent){
+      this.isDrawing = true;
     [this.lastX, this.lastY] = [e.offsetX, e.offsetY];
     this.startRecording();
+    }
+
+    
   }
 
   private startRecording() {
@@ -176,21 +199,43 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
       this.canvas.nativeElement.addEventListener('mousemove', (event) => {
         this.recordDrawing(event);
       });
+      this.canvas.nativeElement.addEventListener('touchmove', (event) => {
+        this.recordDrawing(event);
+      });
     }
   }
 
-  draw(e: MouseEvent) {
+  draw(e: MouseEvent | TouchEvent) {
     if (!this.isDrawing) return;
-    if(!this.context) return;
-    this.context.strokeStyle = this.color;
-    this.context.lineWidth = this.brushSize;
-    this.context.lineCap = 'round';
+    if (!this.context) return;
+    if (e instanceof TouchEvent) {
+      const clientX = e.touches[0].clientX;
+      const clientY = e.touches[0].clientY;
+      const rect = (e.target as HTMLElement).getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      this.context.strokeStyle = this.color;
+      this.context.lineWidth = this.brushSize;
+      this.context.lineCap = 'round';
 
-    this.context.beginPath();
-    this.context.moveTo(this.lastX, this.lastY);
-    this.context.lineTo(e.offsetX, e.offsetY);
-    this.context.stroke();
-    [this.lastX, this.lastY] = [e.offsetX, e.offsetY];
+      this.context.beginPath();
+      this.context.moveTo(this.lastX, this.lastY);
+      this.context.lineTo(x, y);
+      this.context.stroke();
+      [this.lastX, this.lastY] = [x, y];
+    }
+    if (e instanceof MouseEvent) {
+      this.context.strokeStyle = this.color;
+      this.context.lineWidth = this.brushSize;
+      this.context.lineCap = 'round';
+
+      this.context.beginPath();
+      this.context.moveTo(this.lastX, this.lastY);
+      this.context.lineTo(e.offsetX, e.offsetY);
+      this.context.stroke();
+      [this.lastX, this.lastY] = [e.offsetX, e.offsetY];
+    }
+
   }
 
   stopDrawing() {

@@ -1,5 +1,17 @@
+@media (max-width:991px){
+    .card-container{
+        display: flex;
+        flex-direction: column;
+        &>.card-container-div{
+            margin: 0 !important;
+        }
+    }
+}
 .card-container{
     display: flex;
+    &>.card-container-div{
+        margin: 1rem;
+    }
 }
 canvas {
     background: #DDEAED;

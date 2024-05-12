@@ -1,5 +1,5 @@
 <div class="card-container">
-    <div style="margin: 1rem;">
+    <div class="card-container-div">
         <div class="actions">
     <div *ngIf="toggleShowHide" class="show-hide-character"> <i (click)="showHideCharacter()" class="bi bi-eye"></i>
     </div>
@@ -17,7 +17,9 @@
         </div>
     </div>
     <canvas #canvas id="canvas" width="250" height="250" (mousedown)="startDrawing($event)" (mousemove)="draw($event)"
-        (mouseup)="stopDrawing()" (mouseout)="stopDrawing()" (mouseleave)="stopDrawing()">
+        (mouseup)="stopDrawing()" (mouseout)="stopDrawing()" (mouseleave)="stopDrawing()" (touchstart)="startDrawing($event)"
+        (touchmove)="draw($event)" (touchend)="stopDrawing()" (touchcancel)="stopDrawing()"
+        (touchcancel)="stopDrawing()">
     </canvas>
 </div>
 </div>

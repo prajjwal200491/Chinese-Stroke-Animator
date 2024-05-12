@@ -47,13 +47,37 @@ export class MultipleCharactersCopyModeCardComponent implements AfterViewInit,On
       svg.addEventListener('mousedown', (e) => {
         this.startDrawingOnCanvas(e.offsetX, e.offsetY);
       });
+      svg.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        const svgRect = svg?.getBoundingClientRect();
+        if (svgRect) {
+          const offsetX = touch.clientX - svgRect?.left;
+          const offsetY = touch.clientY - svgRect?.top;
+          this.startDrawingOnCanvas(offsetX, offsetY);
+        }
+      });
       svg.addEventListener('mousemove', (e) => {
         this.continueDrawingOnCanvas(e.offsetX, e.offsetY);
+      });
+      svg.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        const svgRect = svg?.getBoundingClientRect();
+        if (svgRect) {
+          const offsetX = touch.clientX - svgRect?.left;
+          const offsetY = touch.clientY - svgRect?.top;
+          this.continueDrawingOnCanvas(offsetX, offsetY);
+        }
       });
       svg.addEventListener('mouseup', () => {
         this.stopDrawingOnCanvas();
       });
+      svg.addEventListener('touchend', (e) => {
+        this.stopDrawingOnCanvas();
+      });
       svg.addEventListener('mouseleave', () => {
+        this.stopDrawingOnCanvas();
+      });
+      svg.addEventListener('touchcancel', (e) => {
         this.stopDrawingOnCanvas();
       });
     }
