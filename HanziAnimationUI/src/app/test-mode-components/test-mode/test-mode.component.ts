@@ -67,6 +67,7 @@ export class TestModeComponent implements OnInit, AfterViewInit {
         this.recordDrawing(event);
       });
       this.canvas.nativeElement.addEventListener('touchmove', (event) => {
+        event.preventDefault();
         this.recordDrawing(event);
       });
     }
