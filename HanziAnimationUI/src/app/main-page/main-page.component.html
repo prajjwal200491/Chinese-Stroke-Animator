@@ -1,7 +1,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-7 column-left">
+    <div class="col-10 col-sm-7 column-left">
       <div class="search-row">
         <div class="search-bar">
           <div class="form-group has-search" style="display: flex;">
@@ -69,7 +69,7 @@
 
     </div>
 
-    <div class="col-5 column-right">
+    <div class="col-2 col-sm-5 column-right">
       <app-all-words-cards [wordCards]="listData" [header]="modalHeader" [nameWithSpaces]="nameWithSpaces" (onWordCardClick)="onHandleOnWordCardClick($event)"></app-all-words-cards>
       <app-character-list [listname]="listname"></app-character-list>
       <div class="more-list">
