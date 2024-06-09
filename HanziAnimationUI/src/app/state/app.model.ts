@@ -36,4 +36,5 @@ export interface ListData {
 export interface Character{
     value: string;
     active: boolean;
+    isTicked?:boolean;
 }

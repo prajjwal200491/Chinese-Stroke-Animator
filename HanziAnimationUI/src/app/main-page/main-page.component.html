@@ -71,45 +71,11 @@
 
     <div class="col-2 col-sm-5 column-right">
       <app-all-words-cards [wordCards]="listData" [header]="modalHeader" [nameWithSpaces]="nameWithSpaces" (onWordCardClick)="onHandleOnWordCardClick($event)"></app-all-words-cards>
-      <app-character-list [listname]="listname"></app-character-list>
+      <app-character-list [listname]="listname" [isTestMode]="isTestMode"></app-character-list>
       <div class="more-list">
         <button (click)="navigateToMoreList()" class="btn btn-primary"> More List...</button>
       </div>
     </div>
-
-    <!-- <div class="col-4 column-right">
-      <div class="recently-typed">
-        <h5>Recently typed words</h5>
-        <hr>
-        <span *ngFor="let character of recentlyTyped$ | async" (click)="onClick(character)">
-          {{character}}&nbsp;
-        </span>
-      </div>
-      <div class="sticky-header">
-        <h6>Groups</h6>
-        <button class="btn bubble-btn" data-toggle="modal" data-target="#listModal">+New List</button>
-      </div>
-
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle full-width" type="button" id="dropdownMenuButton"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{displayName}}
-        </button>
-        <div class="dropdown-menu full-width" aria-labelledby="dropdownMenuButton">
-          <ng-container *ngFor="let list of listData; let i=index">
-            <li *ngIf="i<=2" class="dropdown-item list-group-item" [ngClass]="{active: isActive(list.listname)}"
-              href="#" (click)="onItemClick(list)">{{list.listname}}</li>
-          </ng-container>
-        </div>
-      </div>
-
-      <app-character-list [listname]="listname"></app-character-list>
-      <div class="more-list">
-        <button (click)="navigateToMoreList()" class="btn btn-primary"> More List...</button>
-      </div>
-    </div> -->
-
-
   </div>
 </div>
 <div id='test'></div>

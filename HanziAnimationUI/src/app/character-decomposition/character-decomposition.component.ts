@@ -12,7 +12,7 @@ import HanziWriter from 'hanzi-writer';
   templateUrl: './character-decomposition.component.html',
   styleUrls: ['./character-decomposition.component.scss']
 })
-export class CharacterDecompositionComponent implements OnInit {
+export class CharacterDecompositionComponent implements OnInit, OnChanges {
 
   decomposition!: string[]|undefined;
   relatedWords$!: Observable<string|undefined>;
@@ -20,6 +20,8 @@ export class CharacterDecompositionComponent implements OnInit {
   @Input() character!: string;
 
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService) { }
+  ngOnChanges(changes: SimpleChanges): void {
+  }
   
 
   ngOnInit(): void {

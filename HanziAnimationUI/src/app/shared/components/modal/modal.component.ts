@@ -5,7 +5,7 @@ import { CharacterService } from 'src/app/character.service';
 import { addNewList, addWordList, loadWordsList, reschuffleList, updateList, updateWordList } from 'src/app/state/app.actions';
 import { List, ListData } from 'src/app/state/app.model';
 import { AppState } from 'src/app/state/app.state';
-import {Character} from '../../../state/app.model'
+import { Character } from '../../../state/app.model'
 import { selectListDataWithCards } from 'src/app/state/app.selector';
 import { take } from 'rxjs/operators';
 import { ModalService } from 'src/app/modal.service';
@@ -15,9 +15,9 @@ import { ModalService } from 'src/app/modal.service';
   styleUrls: ['./modal.component.scss']
 })
 export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
-  @ViewChild('myModal') myModal!:ElementRef;
-  @ViewChild('cardInputBox') cardInputBox!:ElementRef;
-  @ViewChild('listInputBox') listInputBox!:ElementRef;
+  @ViewChild('myModal') myModal!: ElementRef;
+  @ViewChild('cardInputBox') cardInputBox!: ElementRef;
+  @ViewChild('listInputBox') listInputBox!: ElementRef;
   @Input() modalId!: string;
   @Input() listName!: any;
   @Input() nameWithSpaces!: any;
@@ -26,13 +26,15 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() disabled!: boolean;
   @Input() openModal!: boolean;
   listForm: FormGroup;
-  wordList: Character[]=[];
-  deletedWordList: Character[]=[];
-  latestCardName: string='';
-  data:any;
-  isDisabledList=true;
-  isDisabledCard=true;
-  showModal=false;
+  wordList: Character[] = [];
+  deletedWordList: Character[] = [];
+  latestCardName: string = '';
+  data: any;
+  isDisabledList = true;
+  isDisabledCard = true;
+  showModal = false;
+  showWordCard = false;
+  showWords = false
 
   constructor(private readonly fb: FormBuilder, private readonly store: Store<AppState>, private readonly characterService: CharacterService,
     private readonly ms: ModalService) {
@@ -41,129 +43,146 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
       cardName: ['', [Validators.required, Validators.minLength(1)]],
       words: ['', [Validators.required, Validators.minLength(1)]]
     })
+
   }
   ngAfterViewInit(): void {
-    this.ms.showModal$.subscribe(show=>{
-      if(this.header==='Update'){
+    this.ms.showModal$.subscribe(show => {
+      if (this.header === 'Update') {
         this.listForm.get('name')?.disable();
-      this.listForm.get('cardName')?.disable();
-      this.listForm.get('name')?.setValue(decodeURIComponent(this.listForm.get('name')?.value));
-      this.listForm.get('cardName')?.setValue(decodeURIComponent(this.listForm.get('cardName')?.value));
+        this.listForm.get('cardName')?.disable();
+        this.listForm.get('name')?.setValue(decodeURIComponent(this.listForm.get('name')?.value));
+        this.listForm.get('cardName')?.setValue(decodeURIComponent(this.listForm.get('cardName')?.value));
       }
-      
+
     })
   }
-  
-  
-  
-  
+
+
+
+
   ngOnChanges(changes: SimpleChanges): void {
-    if(this.list){
-      this.wordList=[...this.list.characters];
+    if (this.list) {
+      this.wordList = [...this.list.characters];
     }
-    if(this.nameWithSpaces){
+    if (this.nameWithSpaces) {
       this.listForm.patchValue({
         name: this.nameWithSpaces,
         //characters: this.list.characters.map(c => c.value).join('')
       });
     }
-    
+    if (changes?.header?.currentValue === 'Create') {
+      this.listForm.get('name')?.valueChanges.subscribe(() => {
+        if (!this.listForm.get('name')?.pristine) {
+          this.showWordCard = true;
+        }
+      })
+      this.listForm.get('cardName')?.valueChanges.subscribe(() => {
+        if (!this.listForm.get('cardName')?.pristine) {
+          this.showWords = true;
+        }
+      })
+    }
+    if(changes?.header?.currentValue==='Update'){
+      this.showWordCard=true;
+      this.showWords=true
+    }
+
   }
 
   ngOnInit(): void {
-      this.wordList=[...this.list?.characters];
+    this.wordList = [...this.list?.characters];
 
     this.listForm.patchValue({
       //name: this.nameWithSpaces,
       cardName: this.list?.cardname,
       //characters: this.list.characters.map(c => c.value).join('')
     });
-    this.store.select(selectListDataWithCards).pipe(take(1)).subscribe((res:any)=>{
-      if(res && this.listName){
+    this.store.select(selectListDataWithCards).pipe(take(1)).subscribe((res: any) => {
+      if (res && this.listName) {
         this.data = res[this.listName];
       }
     })
-    
-    
+
+
   }
 
   get name() {
     return this.list.cardname
   }
 
-  get words(){
+  get words() {
     return this.listForm.get('words')
   }
 
-  get cardName(){
+  get cardName() {
     return this.listForm.get('cardName')
   }
 
-  
-  onModalOpen(event: Event){
+
+  onModalOpen(event: Event) {
     console.log(event);
   }
 
-  removeFromList(index: number){
-    this.wordList.splice(index,1)
+  removeFromList(index: number) {
+    this.wordList.splice(index, 1)
   }
 
-  addCard(cardname: string){
+  addCard(cardname: string) {
     this.latestCardName = cardname;
   }
 
   addToWordsList(item: AbstractControl | null) {
     if (item !== null) {
-    const character={value: item.value.split(" ").join(""), active: false};
-      if(this.header==='Create'){
+      const character = { value: item.value.split(" ").join(""), active: false };
+      if (this.header === 'Create') {
         this.wordList.push(character);
       }
-      else{
-        this.wordList=[...this.wordList, character]
+      else {
+        this.wordList = [...this.wordList, character]
       }
-      
+
     }
 
   }
 
-  onEditList(){
+  onEditList() {
     this.listForm.get('name')?.enable();
     this.listInputBox.nativeElement.focus();
   }
 
-  onEditCard(){
+  onEditCard() {
     this.listForm.get('cardName')?.enable();
     this.cardInputBox.nativeElement.focus();
   }
 
 
   onSubmit(): void {
-     this.deletedWordList= this.list?.characters.filter(c=> !this.wordList.find(item=> item.value===c.value));
-    let card:List = {
-            //cardname: this.listForm.get('cardName')?.value.split(" ").join(""),
-            cardname: encodeURIComponent(this.listForm.get('cardName')?.value),
-            characters: this.wordList,
-            selected: false
+    this.deletedWordList = this.list?.characters.filter(c => !this.wordList.find(item => item.value === c.value));
+    let card: List = {
+      //cardname: this.listForm.get('cardName')?.value.split(" ").join(""),
+      cardname: encodeURIComponent(this.listForm.get('cardName')?.value),
+      characters: this.wordList,
+      selected: false
     };
-    let values:any = {};
-    values[card.cardname]=card;
+    let values: any = {};
+    values[card.cardname] = card;
     if (this.header === 'Create') {
 
-      const final:ListData={
+      const final: ListData = {
         nameWithoutSpaces: this.listForm.get('name')?.value.split(" ").join(""),
         nameWithSpaces: this.listForm.get('name')?.value,
         values
-      
+
       }
-      this.store.dispatch(addWordList({listName: this.listForm.get('name')?.value, cardName: card.cardname, characters: card.characters}));
+      this.store.dispatch(addWordList({ listName: this.listForm.get('name')?.value, cardName: card.cardname, characters: card.characters }));
       //this.store.dispatch(reschuffleList({list:final}));
     }
-    else{
+    else {
       let dataref = {
         ...this.data.values
       };
       delete dataref[this.list.cardname];
-      values={
+      values = {
         ...dataref, ...values
       }
       const final: ListData = {
@@ -173,11 +192,11 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
         // ...this.list,
         // characters: this.wordList,
       }
-      if(this.deletedWordList.length>0){
-        this.store.dispatch(updateWordList({listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters, deletedCharacters: this.deletedWordList}));
+      if (this.deletedWordList.length > 0) {
+        this.store.dispatch(updateWordList({ listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters, deletedCharacters: this.deletedWordList }));
       }
-      else{
-        this.store.dispatch(updateWordList({listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters}));
+      else {
+        this.store.dispatch(updateWordList({ listName: this.listForm.get('name')?.value, listId: this.data.listId, cardName: card.cardname, cardId: this.list.cardId as any, characters: card.characters }));
       }
       //this.store.dispatch(reschuffleList({list:final}));
     }

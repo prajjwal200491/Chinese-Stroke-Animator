@@ -1,0 +1,61 @@
+
+.tts{
+    margin-left: 1rem;
+     .bi-volume-up-fill{
+        cursor: pointer;
+        font-size: larger;
+    }
+}
+.character{
+    width: 100%;
+    padding: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+    background: #DDEAED;
+    margin-left: 1rem;
+    margin-bottom: 0.25rem;
+}
+.character-color-cross{
+    color: hotpink;
+    font-weight: bold;
+    font-size: larger;
+}
+.character-color-check{
+    color: mediumseagreen;
+    font-weight: bold;
+    font-size: larger;
+}
+.container{
+    display: flex;
+}
+.index{
+    margin-top: 0.5rem;
+}
+.test-list-mode-character{
+    cursor: pointer;
+}
+.active-character{
+    font-weight: bold;
+    //background: brown;
+    font-size: larger;
+    border: 1px solid brown;
+    padding: 0 5px;
+}
+
+.bubble-btn{
+    transition: transform 0.3s;
+   }
+   .bubble-btn:hover {
+    animation: bubble 0.4s ease-out;
+  }
+  @keyframes bubble {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }

@@ -15,6 +15,7 @@ export interface AppState{
     relatedWords: string;
     groupCharactersDecomposition: GroupCharacter[];
     groupCharactersRelatedWords: GroupCharacter[];
+    chineseCharactersList:ChineseCharacter[];
 }
 
 export interface GroupCharacter{
@@ -25,3 +26,8 @@ export interface GroupCharacter{
 export type Decomposition={character: string; decomposed: string}
 
 export const selectAppState = createFeatureSelector<AppState>('character');
+
+export interface ChineseCharacter{
+    value?:string;
+    isTicked?:boolean;
+}

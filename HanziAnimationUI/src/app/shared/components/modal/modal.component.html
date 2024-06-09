@@ -13,8 +13,8 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-6">
-                        <div class="label-flex">
-                            <label for="">Group Name:</label>
+                        <div class="label-flex">                            
+                            <label for=""><i class="bi bi-folder2"></i>Folder Name:</label>
                             <button class="bubble-btn" for="" (click)="onEditList()">edit</button>
                         </div>
                         <div><input #listInputBox type="text" formControlName="name" style="width: 100%;">
@@ -22,9 +22,9 @@
                                 contain spaces</div> -->
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" [ngClass]="{'show-column': showWordCard, 'hide-column':!showWordCard}">
                         <div class="label-flex">
-                            <label for="">Word Card:</label>
+                            <label for=""><i class="bi bi-card-text"></i>Word Card:</label>
                             <button class="bubble-btn" for="" (click)="onEditCard()">edit</button>
                         </div>
                         <div> <input #cardInputBox type="text" formControlName="cardName" placeholder="Enter card name"
@@ -36,25 +36,9 @@
                     </div>
 
                 </div>
-                <!-- <div class="row">
-                    <div class="col-4"> <label for="">Word:</label></div>
-                    <div class="col-8"> <input type="text" formControlName="word" placeholder="Enter single character">
-                        <button (click)="addToWordsList(word)" [disabled]="word?.value.length!==1">Add</button>
-                    </div>
-                </div>
+            
                 <div class="row">
-                    <div class="col-4"> <label for="">Group:</label></div>
-                    <div class="col-8"> <input type="text" formControlName="groups" placeholder="Enter multiple characters">
-                    <button (click)="addToWordsList(groups)" [disabled]="groups?.value.length<2">Add</button></div>
-                </div> -->
-                <!-- <div class="row">
-                    <div class="col-4"> <label for="">Card:</label></div>
-                    <div class="col-8"> <input type="text" formControlName="cardName" placeholder="Enter card name">
-                    <div *ngIf="listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should not contain spaces</div>
-                    </div>
-                </div> -->
-                <div class="row">
-                    <div class="col-12">
+                    <div class="col-12" [ngClass]="{'show-column': showWords, 'hide-column':!showWords}">
                         <label for="">Words:</label>
                         <div class="words-input-box"> <input type="text" formControlName="words"
                                 placeholder="Enter words">

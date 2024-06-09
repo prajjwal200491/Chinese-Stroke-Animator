@@ -1,5 +1,8 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
+import { CharacterService } from 'src/app/character.service';
+import { setChineseCharacterTickValue } from 'src/app/state/app.actions';
 
 @Component({
   selector: 'app-multiple-characters-test-mode-card',
@@ -22,9 +25,11 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
   brushSize = 9;
   characterId: string='svgContainer';
   toggleShowHide = true;
+  isCharacterTestCorrect=false;
+  isCharacterTestCross=false;
   private writer!: HanziWriter;
 
-  constructor() { }
+  constructor(private readonly characterS:CharacterService, private readonly store:Store) { }
 
   ngOnInit(): void {
   }
@@ -124,6 +129,27 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
 
     drawNextSegment();
   }
+
+  
+
+  onComparisonCheck(isChecked:boolean){
+    const data={
+      isTicked: isChecked,
+      characterValue: this.character
+    }
+    if(isChecked){
+      this.isCharacterTestCorrect = true;
+      this.isCharacterTestCross=false;
+    }
+    else{
+      this.isCharacterTestCross = true;
+      this.isCharacterTestCorrect = false;  
+    }
+    this.characterS.setComparisonValues(data);
+    this.store.dispatch(setChineseCharacterTickValue({chineseCharacter:{
+      value:data.characterValue,
+      isTicked: data.isTicked
+    }}))  }
 
   private recordDrawing(event: MouseEvent | TouchEvent) {
     if (this.isRecording && this.isDrawing) {

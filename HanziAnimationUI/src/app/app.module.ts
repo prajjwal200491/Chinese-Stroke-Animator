@@ -31,6 +31,9 @@ import { MultipleCharactersTestModeCardComponent } from './test-mode-components/
 import { DrawingCanvasComponent } from './drawing-canvas/drawing-canvas.component';
 import { AllWordsCardsComponent } from './all-words-cards/all-words-cards.component';
 import { WordCardComponent } from './all-words-cards/word-card/word-card.component';
+import { TestModeListComponent } from './test-mode-components/test-mode-list/test-mode-list.component';
+import { DisplayCardComponent } from './test-mode-components/display-card/display-card.component';
+import { TickOrCrossComponent } from './test-mode-components/tick-or-cross/tick-or-cross.component';
 
 
 @NgModule({
@@ -56,7 +59,10 @@ import { WordCardComponent } from './all-words-cards/word-card/word-card.compone
     MultipleCharactersTestModeCardComponent,
     DrawingCanvasComponent,
     AllWordsCardsComponent,
-    WordCardComponent
+    WordCardComponent,
+    TestModeListComponent,
+    DisplayCardComponent,
+    TickOrCrossComponent
   ],
   imports: [
     BrowserModule,

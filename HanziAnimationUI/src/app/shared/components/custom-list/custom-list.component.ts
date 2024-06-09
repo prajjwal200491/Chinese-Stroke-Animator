@@ -42,9 +42,6 @@ export class CustomListComponent implements OnInit, OnChanges {
   onClick(character: Character): void {
     this.store.dispatch(setActiveCharacterList({character:{active: true, value: character.value}, listName: this.listName, cardName: this.list.cardname}));
     this.store.dispatch(shouldSelectList({listname: this.listName}));
-    this.store.select(selectListDataWithCards).subscribe(r=>{
-      console.log(r)
-    })
     this.store.dispatch(moveListToTop({listname: this.listName}));
     if (this.router.url === '/lists') {
       this.router.navigate(['/']);

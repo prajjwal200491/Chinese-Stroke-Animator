@@ -1,0 +1,16 @@
+<ng-container *ngIf="character">
+    <div class="container">
+    <div class="index">{{index+1}}</div>
+    <div class="character">
+        <div style="margin-left: 1rem;" class="test-list-mode-character bubble-btn" [ngClass]="{'active-character':character.active}" (click)="onCharacterClick(character.name)">
+            <ng-container *ngFor="let c of character.characterValues">
+                <span  [ngClass]="{'character-color-check': c.isTicked, 'character-color-cross': !c.isTicked}"> {{c.value}}</span>
+            </ng-container>
+        </div>
+        <div class="tts">
+            <div><i (click)="speak(character.name)" class="bi bi-volume-up-fill"></i></div>
+        </div>
+        <app-tick-or-cross [isTick]="isTick"></app-tick-or-cross>
+    </div>
+</div>
+</ng-container>

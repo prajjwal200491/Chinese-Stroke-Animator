@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch } from "./app.actions";
+import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch, setChineseCharacterTickValue } from "./app.actions";
 import { AppState } from "./app.state";
 import { List, ListData } from "./app.model";
 
@@ -20,6 +20,7 @@ export const initialState: AppState = {
     groupWriters: [],
     groupCharactersDecomposition: [],
     groupCharactersRelatedWords: [],
+    chineseCharactersList:[]
     
 }
 
@@ -116,6 +117,29 @@ export const appReducer = createReducer(
       listData: operationResult.listData,
     })
   ),
+  on(
+    setChineseCharacterTickValue,
+    (state: AppState, {chineseCharacter}): AppState => {
+      const existingIndex = state.chineseCharactersList.findIndex(item => item.value === chineseCharacter.value);
+
+    if (existingIndex === -1) {
+      // If the object does not exist in the array, add it
+      return {
+        ...state,
+        chineseCharactersList: [...state.chineseCharactersList, chineseCharacter]
+      };
+    } else {
+      // If the object exists, update it
+      const updatedItems = state.chineseCharactersList.map((item, index) =>
+        index === existingIndex ? { ...item, ...chineseCharacter } : item
+      );
+      return {
+        ...state,
+        chineseCharactersList: updatedItems
+      };
+    }
+    }
+  ),
 
   on(
     saveReschuffledList,
@@ -188,7 +212,9 @@ export const appReducer = createReducer(
           values:{
             ...updatedListData[listName].values,
             [cardName]: updatedCard,
-          }
+          },
+          listId: updatedListData[listName].listId,
+          isSelectedList: updatedListData[listName].isSelectedList
         }
     }
 
@@ -260,9 +286,11 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             }
             }
             );
-            updatedCard.selected = false;
+            //updatedCard.selected = false;
               updatedListData[lname] = {
                 listname: updatedListData[lname].listname,
+                listId: updatedListData[lname].listId,
+                isSelectedList: updatedListData[lname].isSelectedList,
                 //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
@@ -278,6 +306,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             updatedCard.selected = false;
               updatedListData[lname] = {
                 listname: updatedListData[lname].listname,
+                listId: updatedListData[lname].listId,
+                isSelectedList: updatedListData[lname].isSelectedList,
                 //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,
@@ -302,6 +332,8 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
               updatedCard.selected = false;
               updatedListData[lname] = {
                 listname: updatedListData[lname].listname,
+                listId: updatedListData[lname].listId,
+                isSelectedList: updatedListData[lname].isSelectedList,
                 //nameWithSpaces: updatedListData[lname].nameWithSpaces,
                 values: {
                   ...updatedListData[lname].values,

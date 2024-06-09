@@ -1,7 +1,7 @@
 import { createAction, props } from "@ngrx/store";
 import HanziWriter from "hanzi-writer";
 import { Character, CharacterProperties, List, ListData } from "./app.model";
-import { GroupCharacter } from "./app.state";
+import { ChineseCharacter, GroupCharacter } from "./app.state";
 
 export const searchCharacter = createAction(`Search Character`, props<{search: string}>());
 export const updateCharacter = createAction(`Update Character`, props<{character: string}>());
@@ -30,6 +30,7 @@ export const updateWordList = createAction(`Update Word List`, props<{listName: 
 export const moveListToTop = createAction(`Move List to Top of List`, props<{listname: string}>());
 export const moveListToTopEnded = createAction(`Move List to Top of List Ended`, props<{list: ListData}>());
 export const shouldSelectList = createAction(`Should select List`, props<{listname: string}>());
+export const setChineseCharacterTickValue = createAction(`should toggle chinese character tick value`, props<{chineseCharacter: ChineseCharacter}>());
 
 
 

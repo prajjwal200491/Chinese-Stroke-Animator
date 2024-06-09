@@ -1,0 +1,11 @@
+<div class="row">
+    <div class="col-10">
+        <div *ngIf="characterList.length>0" class="my-5">
+            <div class="card-list">
+                <div *ngFor="let ch of characterList;let i=index">
+                    <app-display-card [character]="ch" [index]="i" (onTestModeCharacterClick)="onTestModeCharacterClick.emit($event)"></app-display-card>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

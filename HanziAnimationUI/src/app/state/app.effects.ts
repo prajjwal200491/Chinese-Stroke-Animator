@@ -201,12 +201,13 @@ export class AppEffects {
     return this.actions$.pipe(
       ofType(loadCharacterDecomposition),
       withLatestFrom(this.store$.select(selectLatestCharacter)),
-      switchMap(([, latest]) =>
+      switchMap(([characterToDecompose, latest]) =>
         this.http.get('assets/dictionary.json').pipe(
           map((res: any) => {
-            if (latest.length > 1) {
+            if (latest.length > 1 || characterToDecompose.character) {
               let groupChar: GroupCharacter[] = [];
-              latest.split('').forEach((item: string) => {
+              const result = (latest!=='') ? latest : characterToDecompose.character;
+              result?.split('').forEach((item: string) => {
                 let d = res.dictionary.find((d: any) => d.character === item);
                 groupChar.push({
                   character: item,
@@ -231,12 +232,13 @@ export class AppEffects {
     return this.actions$.pipe(
       ofType(loadRelatedWords),
       withLatestFrom(this.store$.select(selectLatestCharacter)),
-      switchMap(([, latest]) =>
+      switchMap(([relatedWords, latest]) =>
         this.http.get('assets/dictionary.json').pipe(
           map((res: any) => {
-            if (latest.length > 1) {
+            if (latest.length > 1 || relatedWords.character) {
               let groupChar: GroupCharacter[] = [];
-              latest.split('').forEach((item: string) => {
+              const result = (latest!=='') ? latest : relatedWords.character;
+              result?.split('').forEach((item: string) => {
                 let d = res.dictionary.find((d: any) => d.character === item);
                 groupChar.push({ character: item, relatedWords: d.definition });
               });

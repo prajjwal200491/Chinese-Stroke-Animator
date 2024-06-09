@@ -2,13 +2,18 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
+import { CharacterService } from 'src/app/character.service';
+import { setChineseCharacterTickValue } from 'src/app/state/app.actions';
 
 @Component({
   selector: 'app-test-mode',
@@ -28,6 +33,8 @@ export class TestModeComponent implements OnInit, AfterViewInit {
   lastY = 0;
   color = '#000000';
   brushSize = 9;
+  isCharacterTestCorrect=false;
+  isCharacterTestCross=false;
   private writer!: HanziWriter;
   toggleShowHide = true;
   private strokes: { x: number; y: number; time: number }[][] = [];
@@ -37,7 +44,7 @@ export class TestModeComponent implements OnInit, AfterViewInit {
   static strokeData:any;
   static summaryData:any;
 
-  constructor() {}
+  constructor(private readonly characterS:CharacterService, private readonly store:Store) {}
 
   ngOnInit(): void {}
   ngOnChanges(changes: SimpleChanges): void {
@@ -265,6 +272,26 @@ export class TestModeComponent implements OnInit, AfterViewInit {
   onCompare(){
     this.runAnimation();
     this.playRecording();
+  }
+
+  onComparisonCheck(isChecked:boolean){
+    const data={
+      isTicked: isChecked,
+      characterValue: this.singleCharacter
+    }
+    if(isChecked){
+      this.isCharacterTestCorrect = true;
+      this.isCharacterTestCross=false;
+    }
+    else{
+      this.isCharacterTestCross = true;
+      this.isCharacterTestCorrect=false;
+    }
+    this.characterS.setComparisonValues(data);
+    this.store.dispatch(setChineseCharacterTickValue({chineseCharacter:{
+      value:data.characterValue,
+      isTicked: data.isTicked
+    }}))
   }
 
   createHanziAnimation(character: string, index?: number): void {

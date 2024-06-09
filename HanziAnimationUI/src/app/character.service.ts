@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { onValue, ref, set, update } from '@angular/fire/database';
 import HanziWriter from 'hanzi-writer';
-import { from, Observable, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Character, CharacterProperties, List, ListData } from './state/app.model';
 import { environment } from 'src/environments/environment';
@@ -14,8 +14,14 @@ export class CharacterService {
   private writer!: HanziWriter;
   private writerHanzi= new ReplaySubject<HanziWriter>(1);
   private apiUrl = environment.apiUrl;
+  private onComparison = new BehaviorSubject<any>({});
+  onComparison$ = this.onComparison.asObservable();
 
   constructor(private readonly http: HttpClient) { }
+
+  setComparisonValues(data:any){
+    this.onComparison.next(data)
+  }
 
   setHanziWriter(writer: HanziWriter){
     this.writerHanzi.next(writer);

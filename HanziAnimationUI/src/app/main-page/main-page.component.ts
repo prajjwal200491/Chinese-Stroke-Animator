@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { Observable, of } from 'rxjs';
 import { CharacterService } from '../character.service';
-import { loadCharacter, loadWordsList, loadWordsListData, searchCharacter, setAllListsInactiveOnSearch, updateCharacter } from '../state/app.actions';
+import { loadCharacter, loadCharacterDecomposition, loadRelatedWords, loadWordsList, loadWordsListData, searchCharacter, setAllListsInactiveOnSearch, updateCharacter } from '../state/app.actions';
 import { selectLatestCharacter, selectListDataWithCards, selectRecentlyTypedCharacters } from '../state/app.selector';
 import { AppState } from '../state/app.state';
 import { ListData } from '../state/app.model';
@@ -31,6 +31,7 @@ export class MainPageComponent implements OnInit {
   displayName:any='Lists';
   isCopyMode=false;
   isTestMode=false;
+  characterEmpty=false;
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService, private readonly router:Router) {
    }
 
@@ -38,14 +39,20 @@ export class MainPageComponent implements OnInit {
     //this.characterService.test().subscribe((res)=> console.log(res));
     this.recentlyTyped$ = this.store.select(selectRecentlyTypedCharacters);
     this.store.select(selectLatestCharacter).subscribe(c=> {
+      if(c!==''){
+        this.characterEmpty=false;
       if(c.length>1){
         this.latestCharacter='';
         this.groupCharacters=c.split('');
       }
       else{
         this.groupCharacters=[];
-      this.latestCharacter=c;
+        this.latestCharacter=c;
       }
+    }
+    else{
+      this.characterEmpty=true;
+    }
     });
     this.characterService.getHanziWriter().subscribe(w=> this.writer=w);
     this.store.select(selectListDataWithCards).subscribe(res=>{
@@ -57,6 +64,9 @@ export class MainPageComponent implements OnInit {
         const indexItem=this.listData.find((item:any,i:number)=>i===index);
         const activeCharacter = this.getActiveCharacter(indexItem);
         if(activeCharacter){
+          if(this.characterEmpty){
+            this.loadCharacterDecomAndRelatedWords(activeCharacter);
+          }
           let c = activeCharacter.value;
           if(c.length>1){
             this.latestCharacter='';
@@ -137,5 +147,12 @@ export class MainPageComponent implements OnInit {
     this.isCopyMode = this.isCopyMode? !this.isCopyMode: this.isCopyMode
   }
 
+  loadCharacterDecomAndRelatedWords(character: any):void{
+    this.store.dispatch(loadCharacterDecomposition({character: character.value}));
+    this.store.dispatch(loadRelatedWords({character: character.value}));
+  }
+
 
 }
+
+
