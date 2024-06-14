@@ -2,10 +2,10 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { loadCharacter, loadCharacterDecomposition, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, reschuffleList, saveReschuffledList, loadWordsList, loadRelatedWords, loadRelatedWordsEnded, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, addWordList, updateWordList, loadWordsListDataEnded, setActiveCharacterList, setAllCardsInactive, moveListToTop, moveListToTopEnded, loadWordsListData } from "./app.actions";
+import { loadCharacter, loadCharacterDecomposition, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, reschuffleList, saveReschuffledList, loadWordsList, loadRelatedWords, loadRelatedWordsEnded, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, addWordList, updateWordList, loadWordsListDataEnded, setActiveCharacterList, setAllCardsInactive, moveListToTop, moveListToTopEnded, loadWordsListData, updateChineseCharacterTickValueOnSessionClose, getChineseCharacterTickValue, getChineseCharacterTickValueEnded } from "./app.actions";
 import { flatMap, map, mergeMap, switchMap, tap, withLatestFrom, first, filter } from 'rxjs/operators';
 import { AppState, Decomposition, GroupCharacter } from "./app.state";
-import { selectLatestCharacter, selectCustomListData, selectListDataWithCards } from "./app.selector";
+import { selectLatestCharacter, selectCustomListData, selectListDataWithCards, selectChineseCharactersList } from "./app.selector";
 import { CharacterService } from "../character.service";
 import { Character, List, ListData } from "./app.model";
 import HanziWriter from "hanzi-writer";
@@ -197,6 +197,37 @@ export class AppEffects {
     { dispatch: false }
   );
 
+  updateChineseCharacterTickValueOnSessionClose$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(updateChineseCharacterTickValueOnSessionClose),
+        withLatestFrom(this.store$.select(selectChineseCharactersList)),
+        first(),
+        switchMap(([, chineseCharacters]) => {
+            return this.characterService.updateChineseCharactersTick(chineseCharacters).pipe(
+              map(()=> getChineseCharacterTickValue())
+            )
+        })
+      );
+    }
+  );
+
+  getChineseCharacterTickValue$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(getChineseCharacterTickValue),
+        switchMap(() => {
+            return this.characterService.getChineseCharactersTick().pipe(
+              map((characters)=>{
+                return getChineseCharacterTickValueEnded({characters:characters})
+              })
+            )
+        })
+      );
+    },
+    
+  );
+
   loadCharacterDecomposition$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(loadCharacterDecomposition),
@@ -322,28 +353,7 @@ export class AppEffects {
 
   }
 
-  //   setActive(item:List, character: Character){
-  //     item.characters.map(c=>{
-  //         if(c.value===character.value){
-  //             return {
-  //                 value: character.value,
-  //                 active: character.active
-  //             }
-  //         }
-  //         else{
-  //             return {
-  //                 value: c.value,
-  //                 active: false
-  //             }
-  //         }
-  //     })
-  //   }
-
-  //   setInactive(listname: string, allList: List[]){
-  //     allList.map(item=>{
-  //         if(item.name!===listname)
-  //     })
-  //   }
+  
 
   constructor(
     private readonly actions$: Actions,

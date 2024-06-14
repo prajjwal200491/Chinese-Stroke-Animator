@@ -20,7 +20,6 @@ isTick=false;
   ngOnInit(): void {
 
     
-    
   }
 
   ngOnChanges(changes: SimpleChanges):void{

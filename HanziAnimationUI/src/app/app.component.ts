@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { loadWordsList } from './state/app.actions';
+import { getChineseCharacterTickValue, loadWordsList } from './state/app.actions';
 import { AppState } from './state/app.state';
 import { HttpClient } from '@angular/common/http';
 
@@ -15,30 +15,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(){
     this.store.dispatch(loadWordsList());    
-    const data = {
-      'listName': 'TwoC',
-      'listId': 22,
-      'cardName': 'SectionB',
-      'cardId':35,
-      'characters':[
-        {
-          'characterName': '今天',
-          'active': false,
-          'characterValue': '今天'
-        },
-        {
-          'characterName': '再見',
-          'active': false,
-          'characterValue': '再見'
-        },
-      ]
-    };
-    // this.httpClient.put('http://localhost:3000/api/lists/updateWithListCardsAndCharacters',data).subscribe(res=>{
-    //   debugger;
-    //   console.log(res);
-    // })
+    this.store.dispatch(getChineseCharacterTickValue());    
   }
 
   
+
 
 }

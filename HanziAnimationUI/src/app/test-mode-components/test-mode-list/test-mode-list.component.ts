@@ -35,7 +35,7 @@ export class TestModeListComponent implements OnInit, OnChanges {
             ...characters,
             characterValues: characters.characterValues.map(item=>{
               const match =list.find(l=>{
-                return l.value===item.value
+                return l.character===item.value
               });
               if(match!==undefined){
                 return {
@@ -66,7 +66,7 @@ export class TestModeListComponent implements OnInit, OnChanges {
             characterValues: values.map((item:any)=>{
               return {
                 value: item,
-                isTicked: this.chineseCharacterList?.length>0 && this.chineseCharacterList.find(i=> i.value===item)?.isTicked
+                isTicked: this.chineseCharacterList?.length>0 && this.chineseCharacterList.find(i=> i.character===item)?.isTicked
               }
             })
           }

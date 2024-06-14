@@ -1,15 +1,18 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
+import { first } from 'rxjs/operators';
 import { CharacterService } from 'src/app/character.service';
 import { setChineseCharacterTickValue } from 'src/app/state/app.actions';
+import { selectChineseCharactersList } from 'src/app/state/app.selector';
+import { ChineseCharacter } from 'src/app/state/app.state';
 
 @Component({
   selector: 'app-multiple-characters-test-mode-card',
   templateUrl: './multiple-characters-test-mode-card.component.html',
   styleUrls: ['./multiple-characters-test-mode-card.component.scss']
 })
-export class MultipleCharactersTestModeCardComponent implements OnInit, AfterViewInit {
+export class MultipleCharactersTestModeCardComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() character!: string;
   @Input() characterIndex!: number;
   @ViewChild('canvas', { static: false }) canvas!: ElementRef<HTMLCanvasElement>;
@@ -28,10 +31,27 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
   isCharacterTestCorrect=false;
   isCharacterTestCross=false;
   private writer!: HanziWriter;
+  charactersWithTickedVal!:ChineseCharacter[];
 
   constructor(private readonly characterS:CharacterService, private readonly store:Store) { }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.store.select(selectChineseCharactersList).pipe(first()).subscribe(charactersWithTickedVal=>{
+    if(changes?.character?.currentValue && changes?.character?.currentValue !== changes?.character?.previousValue){
+     const match = charactersWithTickedVal.find(c=>c.character===changes.character.currentValue);
+     if(match && match.hasOwnProperty('isTicked') && match.isTicked){
+      this.isCharacterTestCorrect = true;
+      this.isCharacterTestCross = false;
+     } 
+     else if(match && match.hasOwnProperty('isTicked') && !match.isTicked){
+      this.isCharacterTestCross = true;
+      this.isCharacterTestCorrect = false;
+     }
+    }
+  })
+  }
 
   ngOnInit(): void {
+    
   }
   ngAfterViewInit(): void {
     if(this.character && this.characterIndex!==undefined){
@@ -147,7 +167,7 @@ export class MultipleCharactersTestModeCardComponent implements OnInit, AfterVie
     }
     this.characterS.setComparisonValues(data);
     this.store.dispatch(setChineseCharacterTickValue({chineseCharacter:{
-      value:data.characterValue,
+      character:data.characterValue,
       isTicked: data.isTicked
     }}))  }
 

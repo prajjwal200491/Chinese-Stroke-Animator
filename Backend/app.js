@@ -7,9 +7,14 @@ const {poolPromise} = require('./db');
 app.use(cors());
 const addLists = require('./addListWithCard&Characters');
 const updateLists = require('./updateListWithCard&Characters');
+const addCharactersWithTicks = require('./addCharacterListWithTick');
+const getCharactersWithTicks = require('./getCharacterListWithTick');
+
 // SQL Server configuration
 app.use(addLists);
 app.use(updateLists);
+app.use(addCharactersWithTicks);
+app.use(getCharactersWithTicks);
 
   // API endpoint to get all list names with cards and characters
   app.get('/api/lists', async (req, res)=>{

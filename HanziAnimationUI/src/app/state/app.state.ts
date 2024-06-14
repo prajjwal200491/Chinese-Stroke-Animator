@@ -28,6 +28,6 @@ export type Decomposition={character: string; decomposed: string}
 export const selectAppState = createFeatureSelector<AppState>('character');
 
 export interface ChineseCharacter{
-    value?:string;
+    character?:string;
     isTicked?:boolean;
 }

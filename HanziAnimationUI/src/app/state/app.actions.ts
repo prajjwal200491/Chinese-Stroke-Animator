@@ -31,6 +31,9 @@ export const moveListToTop = createAction(`Move List to Top of List`, props<{lis
 export const moveListToTopEnded = createAction(`Move List to Top of List Ended`, props<{list: ListData}>());
 export const shouldSelectList = createAction(`Should select List`, props<{listname: string}>());
 export const setChineseCharacterTickValue = createAction(`should toggle chinese character tick value`, props<{chineseCharacter: ChineseCharacter}>());
+export const updateChineseCharacterTickValueOnSessionClose = createAction(`should save chinese character tick values on session close`);
+export const getChineseCharacterTickValue = createAction(`should get chinese character tick values`);
+export const getChineseCharacterTickValueEnded = createAction(`should get chinese character tick values Ended`,props<{characters: ChineseCharacter[]}>());
 
 
 

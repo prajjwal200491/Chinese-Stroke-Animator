@@ -14,7 +14,6 @@ export class AllWordsCardsComponent implements OnInit, OnChanges {
 
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(this.wordCards)
   }
 
   ngOnInit(): void {

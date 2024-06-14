@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch, setChineseCharacterTickValue } from "./app.actions";
+import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch, setChineseCharacterTickValue, getChineseCharacterTickValueEnded } from "./app.actions";
 import { AppState } from "./app.state";
 import { List, ListData } from "./app.model";
 
@@ -120,7 +120,7 @@ export const appReducer = createReducer(
   on(
     setChineseCharacterTickValue,
     (state: AppState, {chineseCharacter}): AppState => {
-      const existingIndex = state.chineseCharactersList.findIndex(item => item.value === chineseCharacter.value);
+      const existingIndex = state.chineseCharactersList.findIndex(item => item.character === chineseCharacter.character);
 
     if (existingIndex === -1) {
       // If the object does not exist in the array, add it
@@ -141,6 +141,13 @@ export const appReducer = createReducer(
     }
   ),
 
+  on(
+    getChineseCharacterTickValueEnded,
+    (state: AppState, operationResult): AppState => ({
+      ...state,
+      chineseCharactersList: operationResult.characters
+    })
+  ),
   on(
     saveReschuffledList,
     (state: AppState, operationResult): AppState => ({

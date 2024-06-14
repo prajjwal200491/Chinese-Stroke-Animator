@@ -12,15 +12,17 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
+import { first } from 'rxjs/operators';
 import { CharacterService } from 'src/app/character.service';
 import { setChineseCharacterTickValue } from 'src/app/state/app.actions';
+import { selectChineseCharactersList } from 'src/app/state/app.selector';
 
 @Component({
   selector: 'app-test-mode',
   templateUrl: './test-mode.component.html',
   styleUrls: ['./test-mode.component.scss'],
 })
-export class TestModeComponent implements OnInit, AfterViewInit {
+export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
   @Input() groups: string[] = [];
   @Input() singleCharacter!: string;
   @ViewChild('canvas', { static: false })
@@ -54,6 +56,19 @@ export class TestModeComponent implements OnInit, AfterViewInit {
     if (changes?.groups?.currentValue) {
       this.isSingleCharacter = false;
     }
+    this.store.select(selectChineseCharactersList).pipe(first()).subscribe(charactersWithTickedVal=>{
+      if(changes?.character?.currentValue && changes?.character?.currentValue !== changes?.character?.previousValue){
+       const match = charactersWithTickedVal.find(c=>c.character===changes.character.currentValue);
+       if(match && match.hasOwnProperty('isTicked') && match.isTicked){
+        this.isCharacterTestCorrect = true;
+        this.isCharacterTestCross = false;
+       } 
+       else if(match && match.hasOwnProperty('isTicked') && !match.isTicked){
+        this.isCharacterTestCross = true;
+        this.isCharacterTestCorrect = false;
+       }
+      }
+    })
   }
   ngAfterViewInit(): void {
     if (this.singleCharacter) {
@@ -289,7 +304,7 @@ export class TestModeComponent implements OnInit, AfterViewInit {
     }
     this.characterS.setComparisonValues(data);
     this.store.dispatch(setChineseCharacterTickValue({chineseCharacter:{
-      value:data.characterValue,
+      character:data.characterValue,
       isTicked: data.isTicked
     }}))
   }

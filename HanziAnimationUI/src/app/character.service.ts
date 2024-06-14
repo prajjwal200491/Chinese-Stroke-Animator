@@ -6,6 +6,7 @@ import { BehaviorSubject, from, Observable, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Character, CharacterProperties, List, ListData } from './state/app.model';
 import { environment } from 'src/environments/environment';
+import { ChineseCharacter } from './state/app.state';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,21 @@ export class CharacterService {
     // });
     // return from(saveRef);
 
+  }
+
+  updateChineseCharactersTick(data:ChineseCharacter[]):Observable<any>{
+    return this.http.post(`${this.apiUrl}/api/lists/addCharactersWithTick`, data);
+    // fetch(`${this.apiUrl}/api/lists/addCharactersWithTick`, {
+    //   method: 'POST',
+    //   body: JSON.stringify(data),
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   keepalive: true
+    // });
+  }
+  getChineseCharactersTick():Observable<any>{
+    return this.http.get(`${this.apiUrl}/api/lists/getCharactersWithTick`);
   }
 
   
