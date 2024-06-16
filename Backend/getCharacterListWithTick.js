@@ -3,7 +3,7 @@ const router = express.Router();
 const sql = require('mssql');
 const {poolPromise} = require('./db');
 
-router.get('/api/lists/getCharactersWithTick', async (req, res)=>{
+router.get('/getCharactersWithTick', async (req, res)=>{
     try{
 
     const pool = await poolPromise;
