@@ -3,7 +3,7 @@ const router = express.Router();
 const sql = require('mssql');
 const {poolPromise} = require('./db');
 
-router.post('/api/lists/addCharactersWithTick', async (req, res)=>{
+router.post('/addCharactersWithTick', async (req, res)=>{
     try{
 
     console.log(req);
