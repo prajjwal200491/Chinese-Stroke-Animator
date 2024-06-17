@@ -14,6 +14,7 @@ const getCharactersWithTicks = require('./getCharacterListWithTick');
 app.use(addLists);
 app.use(updateLists);
 app.use('/api/lists',addCharactersWithTicks);
+console.log('using getCharactersWithTicks inside app.js');
 app.use('/api/lists',getCharactersWithTicks);
 
   // API endpoint to get all list names with cards and characters
