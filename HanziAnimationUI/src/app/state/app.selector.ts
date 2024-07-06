@@ -16,4 +16,43 @@ export const selectHanziCharacterData = createSelector(selectAppState, (state: A
 export const selectCustomListData = createSelector(selectAppState, (state: AppState)=> state.list);
 export const selectFourCustomListData = createSelector(selectAppState, (state: AppState)=> state.list);
 export const selectListDataWithCards = createSelector(selectAppState, (state: AppState)=> state.listData);
+export const selectIsSelectedList = createSelector(selectAppState, (state: AppState)=> {
+    if(state.listData){
+        const list = Object.values(state.listData);
+        const result =list.find(l=> l.isSelectedList);
+        return result?.listId;
+    }
+    return undefined;
+
+});
+export const selectIsActiveCharacter = createSelector(selectAppState, (state: AppState)=> {
+    let activeCharacter=undefined;
+    if(state.listData){
+        const list = Object.values(state.listData);
+        list.forEach(l=>{
+            const cards=Object.values(l.values);
+            cards.forEach(card=>{
+                const character = card.characters.find(c=>c.active);
+                activeCharacter = character?.value
+            })
+        })
+        return activeCharacter
+    }
+    return undefined;
+
+});
+export const selectIsSelectedCard = createSelector(selectAppState, (state: AppState)=> {
+    if(state.listData){
+        const list = Object.values(state.listData);
+        const listResult =list.find(l=> l.isSelectedList);
+        if(listResult){
+            const cards =Object.values(listResult.values);
+            const cardResult =cards.find(c=> c.selected);
+            return cardResult?.cardId;
+        }
+        return undefined;
+    }
+    return undefined;
+
+});
 export const selectChineseCharactersList = createSelector(selectAppState, (state: AppState)=> state.chineseCharactersList);

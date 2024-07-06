@@ -9,6 +9,7 @@ const addLists = require('./addListWithCard&Characters');
 const updateLists = require('./updateListWithCard&Characters');
 const addCharactersWithTicks = require('./addCharacterListWithTick');
 const getCharactersWithTicks = require('./getCharacterListWithTick');
+const updateSelections = require('./updateSelectionsList');
 
 // SQL Server configuration
 app.use(addLists);
@@ -16,6 +17,7 @@ app.use(updateLists);
 app.use('/api/lists',addCharactersWithTicks);
 console.log('using getCharactersWithTicks inside app.js');
 app.use('/api/lists',getCharactersWithTicks);
+app.use('/api/lists',updateSelections);
 
   // API endpoint to get all list names with cards and characters
   app.get('/api/lists', async (req, res)=>{
