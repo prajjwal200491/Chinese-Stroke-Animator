@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ModalService } from 'src/app/modal.service';
-import { loadWordsListData, reschuffleList } from 'src/app/state/app.actions';
+import { loadWordsList, reschuffleList } from 'src/app/state/app.actions';
 import { List, ListData } from 'src/app/state/app.model';
 import { selectCustomListData, selectListDataWithCards } from 'src/app/state/app.selector';
 import { AppState } from 'src/app/state/app.state';
@@ -27,7 +27,10 @@ export class ContentListViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.customList$ = this.store.select(selectCustomListData);
-    this.store.dispatch(loadWordsListData());
+    // Fetch list data via SPA navigation. Must dispatch loadWordsList (the action
+    // the effect listens for) — loadWordsListData has no effect and is a no-op, so
+    // after the window.location.reload() was removed the lists page loaded empty.
+    this.store.dispatch(loadWordsList());
   }
 
   onListSearch():void{

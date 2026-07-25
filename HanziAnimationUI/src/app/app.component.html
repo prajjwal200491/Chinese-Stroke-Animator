@@ -1,5 +1,8 @@
 
 <div class="global-loading-bar" *ngIf="loading.pending$ | async"></div>
+<div class="global-loading-spinner" *ngIf="loading.pending$ | async" role="status" aria-label="Loading">
+  <span class="global-loading-spinner__icon"></span>
+</div>
 <div class="server-wakeup-banner" *ngIf="wakeup.waking$ | async">
   <span class="server-wakeup-spinner"></span>
   Starting the server… this can take up to a minute after the app has been idle.
