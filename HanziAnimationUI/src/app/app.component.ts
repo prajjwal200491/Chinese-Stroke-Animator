@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { NavigationStart, Router } from '@angular/router';
 import { BackendWakeupService } from './backend-wakeup.service';
+import { LoadingService } from './loading.service';
 export let browserRefresh = false;
 
 
@@ -17,7 +18,7 @@ export let browserRefresh = false;
 export class AppComponent implements OnInit, OnDestroy {
   subscription!: Subscription;
 
-  constructor(private readonly store: Store<AppState>, private readonly httpClient:HttpClient, private readonly router:Router, public readonly wakeup: BackendWakeupService) {}
+  constructor(private readonly store: Store<AppState>, private readonly httpClient:HttpClient, private readonly router:Router, public readonly wakeup: BackendWakeupService, public readonly loading: LoadingService) {}
 
   @HostListener('window:unload', ['$event'])
   unloadHandler() {

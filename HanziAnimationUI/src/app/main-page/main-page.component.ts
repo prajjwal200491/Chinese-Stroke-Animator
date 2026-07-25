@@ -117,9 +117,9 @@ export class MainPageComponent implements OnInit {
   }
 
   navigateToMoreList():void{
-    this.router.navigate(['/lists']).then(() => {
-      window.location.reload();
-    });
+    // SPA navigation only — no window.location.reload(), which would re-bootstrap
+    // the whole app and re-fire every startup API call.
+    this.router.navigate(['/lists']);
   }
 
   onSearchDisabled(){

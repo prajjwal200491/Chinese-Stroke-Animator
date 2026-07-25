@@ -24,9 +24,8 @@ export class HeaderComponent implements OnInit {
     this.auth.isAuthenticated$.subscribe(isAuth=>{ console.log(isAuth)})
   }
   navigateToMainPage():void{
-    this.router.navigate(['']).then(() => {
-      window.location.reload();
-    });
+    // SPA navigation only — no full-page reload.
+    this.router.navigate(['']);
   }
 
   logout(){

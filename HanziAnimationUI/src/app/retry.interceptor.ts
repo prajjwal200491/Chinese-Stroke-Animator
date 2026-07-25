@@ -10,6 +10,7 @@ import { Observable, throwError, timer } from 'rxjs';
 import { mergeMap, retryWhen, finalize } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { BackendWakeupService } from './backend-wakeup.service';
+import { LoadingService } from './loading.service';
 
 // The free-tier App Service unloads after idle and the serverless SQL DB
 // auto-pauses; the first requests after idle fail while they wake up. Instead
@@ -20,15 +21,19 @@ const MAX_BACKOFF_MS = 8000;
 
 @Injectable()
 export class RetryInterceptor implements HttpInterceptor {
-  constructor(private readonly wakeup: BackendWakeupService) {}
+  constructor(
+    private readonly wakeup: BackendWakeupService,
+    private readonly loading: LoadingService
+  ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Only retry calls to our own backend API — never Auth0 or static assets.
+    // Only track/retry calls to our own backend API — never Auth0 or static assets.
     if (!req.url.startsWith(environment.apiUrl)) {
       return next.handle(req);
     }
 
     let showingIndicator = false;
+    this.loading.start(); // API call is now pending
 
     return next.handle(req).pipe(
       retryWhen((errors) =>
@@ -53,6 +58,7 @@ export class RetryInterceptor implements HttpInterceptor {
         )
       ),
       finalize(() => {
+        this.loading.stop(); // request settled (success or error)
         if (showingIndicator) {
           this.wakeup.stop();
         }
