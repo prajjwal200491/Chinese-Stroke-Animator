@@ -1,70 +1,157 @@
 <!-- The Modal -->
-<div class="modal fade" [id]="modalId" [formGroup]="listForm" #myModal (hidden.bs.modal)="onModalOpen($event)">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<div
+  class="modal fade"
+  [id]="modalId"
+  [formGroup]="listForm"
+  #myModal
+  (hidden.bs.modal)="onModalOpen($event)"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">{{ header }}</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
 
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">{{header}}</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <div class="label-flex">
+              <label for=""><i class="bi bi-folder2"></i>Folder Name:</label>
+              <button
+                class="bubble-btn"
+                type="button"
+                (click)="onEditList()"
+                style="
+                  background: transparent;
+                  border: none;
+                  padding: 0 0.3rem;
+                  margin-left: 0.3rem;
+                "
+              >
+                <i class="bi bi-pencil-square" style="font-size: 1.1rem"></i>
+              </button>
             </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="label-flex">                            
-                            <label for=""><i class="bi bi-folder2"></i>Folder Name:</label>
-                            <button class="bubble-btn" for="" (click)="onEditList()">edit</button>
-                        </div>
-                        <div><input #listInputBox type="text" formControlName="name" style="width: 100%;">
-                            <!-- <div *ngIf="listForm.value['name'] && listForm.value['name'].includes(' ')" class="text-danger">List Name should not
+            <div>
+              <input
+                #listInputBox
+                type="text"
+                formControlName="name"
+                style="width: 100%"
+              />
+              <!-- <div *ngIf="listForm.value['name'] && listForm.value['name'].includes(' ')" class="text-danger">List Name should not
                                 contain spaces</div> -->
-                        </div>
-                    </div>
-                    <div class="col-6" [ngClass]="{'show-column': showWordCard, 'hide-column':!showWordCard}">
-                        <div class="label-flex">
-                            <label for=""><i class="bi bi-card-text"></i>Word Card:</label>
-                            <button class="bubble-btn" for="" (click)="onEditCard()">edit</button>
-                        </div>
-                        <div> <input #cardInputBox type="text" formControlName="cardName" placeholder="Enter card name"
-                                style="width: 100%;">
-                            <!-- <div *ngIf="listForm.value['cardName'] && listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should
-                                not contain spaces</div> -->
-                            <!-- <button (click)="addCard(cardName?.value)" [disabled]="!cardName?.value">Add</button> -->
-                        </div>
-                    </div>
-
-                </div>
-            
-                <div class="row">
-                    <div class="col-12" [ngClass]="{'show-column': showWords, 'hide-column':!showWords}">
-                        <label for="">Words:</label>
-                        <div class="words-input-box"> <input type="text" formControlName="words"
-                                placeholder="Enter words">
-                            <button (click)="addToWordsList(words)" [disabled]="!words?.value">Add Words</button>
-                        </div>
-                    </div>
-
-                </div>
-                <br>
-
-                <div class="pill-container" *ngIf="wordList.length>0">
-                    <div *ngIf="latestCardName"> <label for="">{{latestCardName}}:</label></div>
-                    <div class="word-pill" *ngFor="let word of wordList; let i=index">{{word.value}} <button
-                            class="btn"> <i class="bi bi-dash-lg" (click)="removeFromList(i)"></i></button> </div>
-                </div>
-
-
-
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" data-dismiss="modal" (click)="onSubmit()"
-                        [disabled]="wordList.length===0 ">Done</button>
-                    <!-- [disabled]="wordList.length===0 || (listForm.value['name'] && listForm.value['name'].includes(' ')) || (listForm.value['cardName'] && listForm.value['cardName'].includes(' '))">Done</button> -->
-                </div>
             </div>
+          </div>
+          <div
+            class="col-6"
+            [ngClass]="{
+              'show-column': showWordCard,
+              'hide-column': !showWordCard
+            }"
+          >
+            <div class="label-flex">
+              <label for=""><i class="bi bi-card-text"></i>Word Card:</label>
+              <!-- <button class="bubble-btn" for="" (click)="onEditCard()">
+                edit
+              </button> -->
+              <button
+                class="bubble-btn"
+                type="button"
+                (click)="onEditCard()"
+                style="
+                  background: transparent;
+                  border: none;
+                  padding: 0 0.3rem;
+                  margin-left: 0.3rem;
+                "
+              >
+                <i class="bi bi-pencil-square" style="font-size: 1.1rem"></i>
+              </button>
+            </div>
+            <div>
+              <input
+                #cardInputBox
+                type="text"
+                formControlName="cardName"
+                placeholder="Enter card name"
+                style="width: 100%"
+              />
+              <!-- <div *ngIf="listForm.value['cardName'] && listForm.value['cardName'].includes(' ')" class="text-danger">Card Name should
+                                not contain spaces</div> -->
+              <!-- <button (click)="addCard(cardName?.value)" [disabled]="!cardName?.value">Add</button> -->
+            </div>
+          </div>
         </div>
+
+        <div class="row">
+          <div
+            class="col-12"
+            [ngClass]="{ 'show-column': showWords, 'hide-column': !showWords }"
+          >
+            <label for="">Words:</label>
+            <div class="words-input-box">
+              <input
+                type="text"
+                formControlName="words"
+                placeholder="Enter words"
+              />
+              <button
+                (click)="addToWordsList(words)"
+                [disabled]="!words?.value"
+              >
+                Add Words
+              </button>
+            </div>
+          </div>
+        </div>
+        <br />
+
+        <div class="pill-container" *ngIf="wordList.length > 0">
+          <div *ngIf="latestCardName">
+            <label for="">{{ latestCardName }}:</label>
+          </div>
+          <div class="word-pill" *ngFor="let word of wordList; let i = index">
+            {{ word.value }}
+            <button class="btn">
+              <i class="bi bi-dash-lg" (click)="removeFromList(i)"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="is-public-toggle">
+          <div class="custom-control custom-switch">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="customSwitchToggle"
+              (change)="toggleIsPublic()"
+              [checked]="data ? data.isPublic : isPublic"
+            />
+            <label class="custom-control-label" for="customSwitchToggle"
+              >isPublic</label
+            >
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal">Cancel</button>
+          <button
+            class="btn btn-primary"
+            data-dismiss="modal"
+            (click)="onSubmit()"
+            [disabled]="wordList.length === 0"
+          >
+            Done
+          </button>
+          <!-- [disabled]="wordList.length===0 || (listForm.value['name'] && listForm.value['name'].includes(' ')) || (listForm.value['cardName'] && listForm.value['cardName'].includes(' '))">Done</button> -->
+        </div>
+      </div>
     </div>
+  </div>
 </div>

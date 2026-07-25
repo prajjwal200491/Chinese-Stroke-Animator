@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
-const {poolPromise} = require('./db');
+const { getPool } = require('./db');
 
 router.post('/api/lists/addWithCardsAndCharacters', async (req, res)=>{
     try{
 
     console.log(req);
     debugger;
-    const {listName, cardName, characters} = req.body;
+    const {listName, cardName, characters, isPublic, ownerId} = req.body;
     if(!listName || !cardName || !Array.isArray(characters)){
         return res.status(400).json({error: 'Invalid input'});
     }
 
-    const pool = await poolPromise;
+    const pool = await getPool();
     const transaction = pool.transaction();
     await transaction.begin();
 
@@ -23,7 +23,9 @@ router.post('/api/lists/addWithCardsAndCharacters', async (req, res)=>{
                 .request()
                 .input('listName', sql.NVarChar(100), listName)
                 .input('isSelectedList', sql.Bit, isSelectedList)
-                .query('INSERT INTO Lists (listName, isSelectedList) VALUES (@listName, @isSelectedList); SELECT SCOPE_IDENTITY() AS listId');
+                .input('isPublic', sql.Bit, isPublic)
+                .input('ownerId', sql.NVarChar(100), ownerId)
+                .query('INSERT INTO Lists (listName, isSelectedList, isPublic, ownerId) VALUES (@listName, @isSelectedList, @isPublic, @ownerId); SELECT SCOPE_IDENTITY() AS listId');
         const listId = listResult.recordset[0].listId;
 
         const selected = false;

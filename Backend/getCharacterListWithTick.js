@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
-const {poolPromise} = require('./db');
+const { getPool } = require('./db');
 
 router.get('/getCharactersWithTick', async (req, res)=>{
     try{
         console.log('inside getCharactersWithTick');
-    const pool = await poolPromise;
+    const pool = await getPool();
     const transaction = pool.transaction();
     await transaction.begin();
     console.log('inside getCharactersWithTick transaction started');

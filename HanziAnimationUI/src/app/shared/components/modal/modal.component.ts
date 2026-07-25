@@ -34,7 +34,8 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   isDisabledCard = true;
   showModal = false;
   showWordCard = false;
-  showWords = false
+  showWords = false;
+  isPublic=true;
 
   constructor(private readonly fb: FormBuilder, private readonly store: Store<AppState>, private readonly characterService: CharacterService,
     private readonly ms: ModalService) {
@@ -64,7 +65,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.list) {
       this.wordList = [...this.list.characters];
     }
-    if (this.nameWithSpaces) {
+    if (this.nameWithSpaces && this.header === 'Update') {
       this.listForm.patchValue({
         name: this.nameWithSpaces,
         //characters: this.list.characters.map(c => c.value).join('')
@@ -155,6 +156,10 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
     this.cardInputBox.nativeElement.focus();
   }
 
+  toggleIsPublic(){
+    this.isPublic = !this.isPublic;
+  }
+
 
   onSubmit(): void {
     this.deletedWordList = this.list?.characters.filter(c => !this.wordList.find(item => item.value === c.value));
@@ -174,7 +179,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
         values
 
       }
-      this.store.dispatch(addWordList({ listName: this.listForm.get('name')?.value, cardName: card.cardname, characters: card.characters }));
+      this.store.dispatch(addWordList({ listName: this.listForm.get('name')?.value, cardName: card.cardname, characters: card.characters, isPublic: this.isPublic }));
       //this.store.dispatch(reschuffleList({list:final}));
     }
     else {

@@ -16,8 +16,13 @@ export interface AppState{
     groupCharactersDecomposition: GroupCharacter[];
     groupCharactersRelatedWords: GroupCharacter[];
     chineseCharactersList:ChineseCharacter[];
+    loggedInUser?: LoggedInUser;
 }
 
+export interface LoggedInUser{
+    email?: string;
+    userId?: string;
+}
 export interface GroupCharacter{
     character?:string;
     decomposition?: string;

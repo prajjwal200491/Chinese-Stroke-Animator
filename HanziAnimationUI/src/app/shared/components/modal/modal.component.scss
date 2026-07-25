@@ -101,3 +101,10 @@ label{
       transform: scale(1);
     }
   }
+
+  .custom-control .custom-control-input{
+    cursor: pointer;
+  }
+  .custom-control-label{
+    font-size: small;
+  }

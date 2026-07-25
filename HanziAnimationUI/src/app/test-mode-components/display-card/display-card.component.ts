@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnI
 import { Store } from '@ngrx/store';
 import { CharacterList } from '../test-mode-list/test-mode-list.component';
 import { loadRelatedWords, updateCharacter } from 'src/app/state/app.actions';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-display-card',
@@ -13,9 +14,11 @@ import { loadRelatedWords, updateCharacter } from 'src/app/state/app.actions';
 export class DisplayCardComponent implements OnInit, OnChanges {
 @Input() character!:CharacterList;
 @Input() index!:number;
+@Input() revealPinyins:boolean=false;
 @Output() onTestModeCharacterClick = new EventEmitter();
 isTick=false;
-  constructor(private readonly store:Store) { }
+pinyins:string[]=[];
+  constructor(private readonly store:Store, private readonly http: HttpClient) { }
 
   ngOnInit(): void {
 
@@ -23,8 +26,13 @@ isTick=false;
   }
 
   ngOnChanges(changes: SimpleChanges):void{
-    if(changes.character.currentValue){
+    console.log(this.revealPinyins);
+    if(changes?.character?.currentValue){
+      this.revealPinyins = false;
       this.isTick = this.character.characterValues.every(item=> item.isTicked);
+      changes.character.currentValue.characterValues.forEach((c:any)=>{
+        this.getPinyin(c.value);
+      })
     }
   }
 
@@ -38,6 +46,13 @@ isTick=false;
     const utterance = new SpeechSynthesisUtterance(character);
     utterance.lang = 'zh-CN';
     speechSynthesis.speak(utterance);
+  }
+
+  getPinyin(character:string){
+    this.http.get('assets/dictionary.json').subscribe((res:any)=>{
+      let d = res.dictionary.find((d: any) => d.character === character);
+      this.pinyins = [...this.pinyins, d.pinyin[0]];
+    })
   }
 
 }

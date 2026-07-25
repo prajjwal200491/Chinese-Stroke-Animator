@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch, setChineseCharacterTickValue, getChineseCharacterTickValueEnded } from "./app.actions";
+import { addNewList, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, updateList, saveReschuffledList, setActiveCharacterList, loadRelatedWordsEnded, resetGroupWriter, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, loadWordsListDataEnded, setAllCardsInactive, moveListToTopEnded, shouldSelectList, setAllListsInactiveOnSearch, setChineseCharacterTickValue, getChineseCharacterTickValueEnded, getLoggedInUser } from "./app.actions";
 import { AppState } from "./app.state";
 import { List, ListData } from "./app.model";
 
@@ -33,6 +33,13 @@ export const appReducer = createReducer(
       search: operationResult.search,
       recentlyTyped: [...state.recentlyTyped, operationResult.search],
       character: operationResult.search,
+    })
+  ),
+  on(
+    getLoggedInUser,
+    (state: AppState, operationResult): AppState => ({
+      ...state,
+      loggedInUser: operationResult.user
     })
   ),
 

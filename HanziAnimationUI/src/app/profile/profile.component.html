@@ -1,0 +1,15 @@
+<!-- Profile Button -->
+<div class="profile-container">
+    <button class="profile-button" (click)="toggleDropdown()">
+      <!-- Display user's picture or fallback icon -->
+      <img *ngIf="user?.picture" [src]="user.picture" alt="Profile Picture">
+      <span *ngIf="!user?.picture">Profile</span>
+    </button>
+  
+    <!-- Dropdown Menu -->
+    <div class="dropdown-menu" *ngIf="isDropdownOpen">
+      <p>{{ user?.email }}</p>
+      <button (click)="logout()">Logout</button>
+    </div>
+  </div>
+  

@@ -5,7 +5,7 @@ import { Store } from "@ngrx/store";
 import { loadCharacter, loadCharacterDecomposition, loadCharacterDecompositionEnded, loadCharacterEnded, searchCharacter, updateCharacter, reschuffleList, saveReschuffledList, loadWordsList, loadRelatedWords, loadRelatedWordsEnded, saveGroupDecomposition, saveGroupRelatedWords, loadWordsListEnded, addWordList, updateWordList, loadWordsListDataEnded, setActiveCharacterList, setAllCardsInactive, moveListToTop, moveListToTopEnded, loadWordsListData, updateChineseCharacterTickValueOnSessionClose, getChineseCharacterTickValue, getChineseCharacterTickValueEnded } from "./app.actions";
 import { flatMap, map, mergeMap, switchMap, tap, withLatestFrom, first, filter } from 'rxjs/operators';
 import { AppState, Decomposition, GroupCharacter } from "./app.state";
-import { selectLatestCharacter, selectCustomListData, selectListDataWithCards, selectChineseCharactersList } from "./app.selector";
+import { selectLatestCharacter, selectCustomListData, selectListDataWithCards, selectChineseCharactersList, selectLoggedInUserDetails } from "./app.selector";
 import { CharacterService } from "../character.service";
 import { Character, List, ListData } from "./app.model";
 import HanziWriter from "hanzi-writer";
@@ -37,21 +37,21 @@ export class AppEffects {
     );
   });
 
-  loadWordsList$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(loadWordsList),
-      mergeMap(() =>
-        this.characterService.getList().pipe(
-          map((lists) => {
-            return loadWordsListEnded({
-              lists: Object.values(lists),
-              listIds: Object.keys(lists),
-            });
-          })
-        )
-      )
-    );
-  });
+  // loadWordsList$ = createEffect(() => {
+  //   return this.actions$.pipe(
+  //     ofType(loadWordsList),
+  //     mergeMap(() =>
+  //       this.characterService.getList().pipe(
+  //         map((lists) => {
+  //           return loadWordsListEnded({
+  //             lists: Object.values(lists),
+  //             listIds: Object.keys(lists),
+  //           });
+  //         })
+  //       )
+  //     )
+  //   );
+  // });
 
   loadWordsListData$ = createEffect(() => {
     return this.actions$.pipe(
@@ -69,7 +69,8 @@ export class AppEffects {
   addWordList$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(addWordList),
-      switchMap(({ listName, cardName, characters }) =>{
+      withLatestFrom(this.store$.select(selectLoggedInUserDetails)),
+      switchMap(([{ listName, cardName, characters, isPublic },loggedInUser]) =>{
         characters= characters.map(c=>{
           return {
             active: c.active,
@@ -78,7 +79,7 @@ export class AppEffects {
           }
         })
         return this.characterService
-          .saveListData(listName, cardName, characters)
+          .saveListData(listName, cardName, characters, isPublic,loggedInUser)
           .pipe(map(() => loadWordsList()))
       }
       )
@@ -197,15 +198,31 @@ export class AppEffects {
     { dispatch: false }
   );
 
+  // updateChineseCharacterTickValueOnSessionClose$ = createEffect(
+  //   () => {
+  //     return this.actions$.pipe(
+  //       ofType(updateChineseCharacterTickValueOnSessionClose),
+  //       withLatestFrom(this.store$.select(selectChineseCharactersList)),
+  //       //first(),
+  //       switchMap(([, chineseCharacters]) => {
+  //           return this.characterService.updateChineseCharactersTick(chineseCharacters).pipe(
+  //             map(()=> getChineseCharacterTickValue())
+  //           )
+  //       })
+  //     );
+  //   }
+  // );
   updateChineseCharacterTickValueOnSessionClose$ = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(updateChineseCharacterTickValueOnSessionClose),
-        withLatestFrom(this.store$.select(selectChineseCharactersList)),
-        first(),
-        switchMap(([, chineseCharacters]) => {
-            return this.characterService.updateChineseCharactersTick(chineseCharacters).pipe(
-              map(()=> getChineseCharacterTickValue())
+        switchMap(() => {
+            return this.characterService.getChineseCharactersTick().pipe(
+              switchMap((chineseCharacters)=> {
+                return this.characterService.updateChineseCharactersTick(chineseCharacters).pipe(
+                  map(()=> getChineseCharacterTickValue())
+                )
+              })
             )
         })
       );

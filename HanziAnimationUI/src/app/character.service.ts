@@ -6,7 +6,7 @@ import { BehaviorSubject, from, Observable, of, ReplaySubject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Character, CharacterProperties, List, ListData } from './state/app.model';
 import { environment } from 'src/environments/environment';
-import { ChineseCharacter } from './state/app.state';
+import { ChineseCharacter, LoggedInUser } from './state/app.state';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +51,7 @@ export class CharacterService {
     this.writer=writer;
   }
   reverseAnimation(writer: HanziWriter){
-    writer.backAnimateCharacter();
+    //writer.backAnimateCharacter();
     this.writer=writer;
   }
   resumeAnimation(writer: HanziWriter){
@@ -80,11 +80,13 @@ export class CharacterService {
     // return from(updateRef);
   }
 
-  saveListData(listName: string, cardName: string, characters: any[]): Observable<any>{
+  saveListData(listName: string, cardName: string, characters: any[], isPublic:boolean, loggedInUser: LoggedInUser|undefined): Observable<any>{
     const data = {
       'listName': listName,
       'cardName': cardName,
-      'characters':characters
+      'characters':characters,
+      'isPublic': isPublic,
+      'ownerId': isPublic? null: loggedInUser?.userId
     };
     return this.http.post(`${this.apiUrl}/api/lists/addWithCardsAndCharacters`, data);
     //  const saveRef=update(ref(this.database, 'listData/' + listData.nameWithoutSpaces), listData).then(()=>{

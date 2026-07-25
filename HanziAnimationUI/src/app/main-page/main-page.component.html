@@ -1,7 +1,14 @@
 
 <div class="container">
+  
+  <div *ngIf="isMobile" class="toggle-switch">
+    <span> <b> Characters ↔ Folders </b></span> 
+    <i *ngIf="sidebarVisible" class="bi bi-toggle-on" (click)="toggleSidebar()"></i>
+    <i *ngIf="!sidebarVisible" class="bi bi-toggle-off" (click)="toggleSidebar()"></i>
+  </div>
+  
   <div class="row">
-    <div class="col-10 col-sm-7 column-left">
+    <div class="col-10 col-sm-7 column-left" [ngClass]="{'d-none':isMobile && sidebarVisible}">
       <div class="search-row">
         <div class="search-bar">
           <div class="form-group has-search" style="display: flex;">
@@ -69,7 +76,7 @@
 
     </div>
 
-    <div class="col-2 col-sm-5 column-right">
+    <div class="col-2 col-sm-5 column-right" [ngClass]="{'d-none': isMobile && !sidebarVisible, 'col-12 col-sm-12': isMobile && sidebarVisible}">
       <app-all-words-cards [wordCards]="listData" [header]="modalHeader" [nameWithSpaces]="nameWithSpaces" (onWordCardClick)="onHandleOnWordCardClick($event)"></app-all-words-cards>
       <app-character-list [listname]="listname" [isTestMode]="isTestMode"></app-character-list>
       <div class="more-list">

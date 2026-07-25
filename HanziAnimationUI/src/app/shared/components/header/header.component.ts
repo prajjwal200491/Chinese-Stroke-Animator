@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { NavigationStart, Router } from '@angular/router';
+import { AuthService } from '@auth0/auth0-angular';
 import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
 import { updateChineseCharacterTickValueOnSessionClose } from 'src/app/state/app.actions';
+
 
 @Component({
   selector: 'app-header',
@@ -9,10 +13,15 @@ import { updateChineseCharacterTickValueOnSessionClose } from 'src/app/state/app
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-
-  constructor(private readonly router:Router, private readonly store:Store) { }
+  loginUrl='';
+  constructor(private readonly router:Router, private readonly store:Store, @Inject(DOCUMENT) public document: Document, public auth: AuthService) { 
+    
+  }
+  
 
   ngOnInit(): void {
+    this.loginUrl=`${this.document.location.origin}/login`;
+    this.auth.isAuthenticated$.subscribe(isAuth=>{ console.log(isAuth)})
   }
   navigateToMainPage():void{
     this.router.navigate(['']).then(() => {
@@ -20,8 +29,17 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  logout(){
+   
+    this.auth.logout({logoutParams:{returnTo:`${this.document.location.origin}/logged-out`}})
+    //this.auth.loginWithRedirect();
+  }
+  login(){
+    this.auth.loginWithRedirect();
+  }
+
   saveChanges(){
-    this.updateTickedInfo();
+    //this.updateTickedInfo();
   }
 
   private updateTickedInfo() {

@@ -2,9 +2,14 @@
     <div class="container">
     <div class="index">{{index+1}}</div>
     <div class="character">
-        <div style="margin-left: 1rem;" class="test-list-mode-character bubble-btn" [ngClass]="{'active-character':character.active}" (click)="onCharacterClick(character.name)">
+        <div *ngIf="!revealPinyins" style="margin-left: 1rem;" class="test-list-mode-character bubble-btn" [ngClass]="{'active-character':character.active}" (click)="onCharacterClick(character.name)">
             <ng-container *ngFor="let c of character.characterValues">
                 <span  [ngClass]="{'character-color-check': c.isTicked, 'character-color-cross': !c.isTicked}"> {{c.value}}</span>
+            </ng-container>
+        </div>
+        <div *ngIf="revealPinyins" style="margin-left: 1rem;" class="test-list-mode-character bubble-btn" [ngClass]="{'active-character':character.active}">
+            <ng-container *ngFor="let pin of pinyins">
+                <span  > {{pin}}</span>
             </ng-container>
         </div>
         <div class="tts">

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
-const { poolPromise } = require('./db');
+const { getPool } = require('./db');
 
 router.put('/updateSelections', async (req, res) => {
     try {
@@ -14,7 +14,7 @@ router.put('/updateSelections', async (req, res) => {
             return res.status(400).json({ error: 'Invalid input' });
         }
 
-        const pool = await poolPromise;
+        const pool = await getPool();
         const transaction = pool.transaction();
         await transaction.begin();
 

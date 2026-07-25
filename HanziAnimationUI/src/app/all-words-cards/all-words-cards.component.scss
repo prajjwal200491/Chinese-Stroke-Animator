@@ -1,7 +1,21 @@
+// Scrollable area for folders
+.tab-content-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+.folders-flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  width: 100%;
+}
 .words-card-container{
     background: #ECECEC;
     display: flex;
-    padding: 1rem;
+    flex-direction: column;
+    padding: 0 0 1rem 0;
     flex-wrap: wrap;
 }
 .actions{
@@ -14,7 +28,11 @@
 }
 .new-folder, .share{
     padding: 0 1rem;
+    margin: 0.5rem;
     cursor: pointer;
+}
+.nav-item{
+  cursor: pointer;
 }
 
 .bubble-btn{

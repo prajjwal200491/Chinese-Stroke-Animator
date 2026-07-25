@@ -13,6 +13,7 @@ export const selectGroupDecomposition = createSelector(selectAppState, (state: A
 export const selectRelatedWords = createSelector(selectAppState, (state: AppState)=> state.relatedWords);
 export const selectGroupRelatedWords = createSelector(selectAppState, (state: AppState, props:{character: string})=> state.groupCharactersRelatedWords.find(item=> item.character===props.character)?.relatedWords);
 export const selectHanziCharacterData = createSelector(selectAppState, (state: AppState)=> state.writer);
+export const selectLoggedInUserDetails = createSelector(selectAppState, (state: AppState)=> state.loggedInUser);
 export const selectCustomListData = createSelector(selectAppState, (state: AppState)=> state.list);
 export const selectFourCustomListData = createSelector(selectAppState, (state: AppState)=> state.list);
 export const selectListDataWithCards = createSelector(selectAppState, (state: AppState)=> state.listData);

@@ -4,11 +4,12 @@
   "description": "",
   "main": "Backend/app.js",
   "scripts": {
-    "start": "cd Backend && node app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "azure-cli": "^0.10.20",
     "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "mssql": "^10.0.1"
   }

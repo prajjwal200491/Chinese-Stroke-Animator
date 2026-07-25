@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { Observable, of } from 'rxjs';
@@ -32,10 +32,18 @@ export class MainPageComponent implements OnInit {
   isCopyMode=false;
   isTestMode=false;
   characterEmpty=false;
+  isMobile: boolean = false;
+  sidebarVisible: boolean = false;
   constructor(private readonly store: Store<AppState>, private readonly characterService: CharacterService, private readonly router:Router) {
    }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkIfMobile();
+  }
+
   ngOnInit(): void {
+    this.checkIfMobile();
     //this.characterService.test().subscribe((res)=> console.log(res));
     this.recentlyTyped$ = this.store.select(selectRecentlyTypedCharacters);
     this.store.select(selectLatestCharacter).subscribe(c=> {
@@ -89,6 +97,15 @@ export class MainPageComponent implements OnInit {
       }
     })
   }
+
+  checkIfMobile() {
+    this.isMobile = window.innerWidth < 576;
+  }
+
+  toggleSidebar() {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+  
   textChange(){
     this.store.dispatch(setAllListsInactiveOnSearch());
     this.store.dispatch(searchCharacter({search: this.chineseTxt}));

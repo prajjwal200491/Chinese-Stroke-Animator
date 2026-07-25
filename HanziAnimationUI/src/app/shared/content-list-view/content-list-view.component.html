@@ -1,35 +1,53 @@
-<app-modal [modalId]="'listModalContentView'" [header]="'Create'" [openModal]="openModal"></app-modal>
+<app-modal
+  [modalId]="'listModalContentView'"
+  [header]="'Create'"
+  [openModal]="openModal"
+></app-modal>
 <div class="container">
-<div class="row">
+  <div class="row">
     <i class="bi bi-arrow-left" (click)="goBack()"></i>
-</div>
-    <div class="row">
-        <div class="col-6">
-            <div class="search-row">
-                <div class="search-bar">
-                    <div class="form-group has-search">
-                        <i class="bi bi-search"></i>
-                        <input [(ngModel)]="listName" (ngModelChange)="onListSearch()" type="text" class="form-control" placeholder="Search Lists By Name">
-                    </div>
-                </div>
-            </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <div class="search-row">
+        <div class="search-bar">
+          <div class="form-group has-search">
+            <i class="bi bi-search"></i>
+            <input
+              [(ngModel)]="listName"
+              (ngModelChange)="onListSearch()"
+              type="text"
+              class="form-control"
+              placeholder="Search Lists By Name"
+            />
+          </div>
         </div>
-        <div class="col-6">
-            <button class="btn bubble-btn" data-toggle="modal" data-target="#listModalContentView" (click)="onListBtnClick()">+New List</button>
-            <!-- <button class="btn" (click)="onListBtnClick()">+New List</button> -->
-        </div>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-12">
-        <h5>Lists</h5><hr>
-        </div>
+    <div class="col-6">
+      <!-- <button class="btn bubble-btn" data-toggle="modal" data-target="#listModalContentView" (click)="onListBtnClick()">+New List</button> -->
+      <button
+        (click)="onListBtnClick()"
+        type="button"
+        class="bubble-btn btn btn-primary"
+        data-toggle="modal"
+        data-target="#listModalContentView"
+      >
+        Add List
+      </button>
+      <!-- <button class="btn" (click)="onListBtnClick()">+New List</button> -->
     </div>
-    <div class="row">
-        <!-- <div *ngFor="let list of customList$ | async" class="custom-list-wrapper col-3">
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <h5>Lists</h5>
+      <hr />
+    </div>
+  </div>
+  <div class="row">
+    <!-- <div *ngFor="let list of customList$ | async" class="custom-list-wrapper col-3">
             <app-custom-list [list]="list" (moveList)="reschuffleList($event)"></app-custom-list>
         </div> -->
-        <app-list-wrappr></app-list-wrappr>
-
-    </div>
-    
+    <app-list-wrappr></app-list-wrappr>
+  </div>
 </div>

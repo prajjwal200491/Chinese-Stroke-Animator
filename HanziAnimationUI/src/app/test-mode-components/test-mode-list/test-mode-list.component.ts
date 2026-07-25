@@ -23,6 +23,7 @@ export class TestModeListComponent implements OnInit, OnChanges {
   characters: Character[] = [];
   characterList: CharacterList[]=[];
   chineseCharacterList!:ChineseCharacter[];
+  revealPinyins=false;
 
   constructor(private readonly characterService: CharacterService, private readonly store:Store) { }
 
@@ -80,6 +81,10 @@ export class TestModeListComponent implements OnInit, OnChanges {
     const utterance = new SpeechSynthesisUtterance(character);
     utterance.lang = 'zh-CN';
     speechSynthesis.speak(utterance);
+  }
+
+  showPinyin(){
+    this.revealPinyins = !this.revealPinyins;
   }
 
 }

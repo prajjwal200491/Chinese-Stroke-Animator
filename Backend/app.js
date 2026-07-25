@@ -1,9 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
 app.use(express.json());
 const port = process.env.PORT||3000;
-const {poolPromise} = require('./db');
+const { getPool } = require('./db');
 app.use(cors());
 const addLists = require('./addListWithCard&Characters');
 const updateLists = require('./updateListWithCard&Characters');
@@ -24,12 +25,14 @@ app.use('/api/lists',updateSelections);
     try{
 
         // Query to get all lists with cards and characters
-        const pool = await poolPromise;
+        const pool = await getPool();
         const result = await pool.request().query(`
     SELECT
         Lists.listName,
         Lists.listId,
         Lists.isSelectedList,
+        Lists.isPublic,
+        Lists.ownerId,
         Cards.cardName,
         Cards.cardId,
         Cards.selected,
@@ -58,6 +61,8 @@ app.use('/api/lists',updateSelections);
     listname: obj.listName,
     listId: obj.listId,
     isSelectedList: obj.isSelectedList,
+    isPublic: obj.isPublic,
+    ownerId: obj.ownerId,
     values: values
     }
     }
@@ -97,6 +102,13 @@ app.use('/api/lists',updateSelections);
       }
   });
 
+
+// Keep the process alive if the DB (or any async op) rejects, instead of
+// crashing the whole server. Errors are logged and individual requests still
+// return 500 via their own try/catch.
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled promise rejection:', err);
+});
 
   // Start the server
 app.listen(port, () => {

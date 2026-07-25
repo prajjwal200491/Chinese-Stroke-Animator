@@ -1,8 +1,7 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { MainPageComponent } from './main-page/main-page.component';
@@ -13,7 +12,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { CustomBackgroundComponent } from './custom-background/custom-background.component';
 import { CharacterDecompositionComponent } from './character-decomposition/character-decomposition.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RetryInterceptor } from './retry.interceptor';
 import { AppEffects } from './state/app.effects';
 import { CharacterComponent } from './shared/components/character/character.component';
 import { CharacterListComponent } from './character-list/character-list.component';
@@ -34,6 +34,10 @@ import { WordCardComponent } from './all-words-cards/word-card/word-card.compone
 import { TestModeListComponent } from './test-mode-components/test-mode-list/test-mode-list.component';
 import { DisplayCardComponent } from './test-mode-components/display-card/display-card.component';
 import { TickOrCrossComponent } from './test-mode-components/tick-or-cross/tick-or-cross.component';
+import { CommonModule } from '@angular/common';
+import { AuthModule } from '@auth0/auth0-angular';
+import { ProfileComponent } from './profile/profile.component';
+import { LoggedOutComponent } from './logged-out/logged-out.component';
 
 
 @NgModule({
@@ -62,12 +66,14 @@ import { TickOrCrossComponent } from './test-mode-components/tick-or-cross/tick-
     WordCardComponent,
     TestModeListComponent,
     DisplayCardComponent,
-    TickOrCrossComponent
+    TickOrCrossComponent,
+    ProfileComponent,
+    LoggedOutComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule,
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
@@ -77,10 +83,22 @@ import { TickOrCrossComponent } from './test-mode-components/tick-or-cross/tick-
       autoPause: true, // Pauses recording actions and state changes when the extension window is not open
     }),
     EffectsModule.forRoot([AppEffects]),
+    AuthModule.forRoot({
+      domain: 'dev-zzkr3nt1wero3b5v.us.auth0.com',
+      clientId: 'fr9RbVWQCmIl0mubIwQZ8y5JMxqQcyIQ',
+      authorizationParams: {
+        redirect_uri: window.location.origin,
+        // scope: 'read:users read:user_idp_tokens',
+        // audience: 'https://dev-ypkfhzhpqv0234n6.us.auth0.com/api/v2/', 
+      }
+    })
     //provideFirebaseApp(() => initializeApp(environment.firebase)),
     //provideDatabase(() => getDatabase()),
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: RetryInterceptor, multi: true },
+  ],
+  bootstrap: [AppComponent],
+  schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

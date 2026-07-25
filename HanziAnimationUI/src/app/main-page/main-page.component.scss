@@ -4,7 +4,7 @@
     }
     background-color: #fff;
     margin-top: 0.5rem;
-    display: flex;
+    //display: flex;
     & .search-row{
         display: flex;
         & .search-bar{
@@ -132,5 +132,17 @@
   }
   .custom-control-label{
     font-size: small;
+  }
+
+  .bi-toggle-on, .bi-toggle-off{
+    font-size: x-large;
+  }
+  .toggle-switch{
+    display: flex;
+    flex-direction: column;
+    & span{
+        font-size: x-small;
+        margin-bottom: -10px;
+    }
   }
 
