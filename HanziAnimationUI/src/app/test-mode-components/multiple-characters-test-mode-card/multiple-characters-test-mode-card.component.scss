@@ -15,6 +15,7 @@
 }
 canvas {
     background: #DDEAED;
+    touch-action: none; // stop page scroll fighting a stroke on mobile
 }
 .svg-container {
     //position: absolute;
@@ -26,16 +27,38 @@ canvas {
 }
 .tools{
     display: flex;
+    align-items: center;
     font-size: small;
-    & div{
+    // Direct children only -- as a descendant selector this double-padded the
+    // div nested inside .reset and pushed the icon past the canvas edge.
+    & > div{
         padding: 0 0.5rem;
+    }
+    & > .undo, & > .redo, & > .reset{
+        padding: 0 0.2rem;
     }
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
-.bi-x-circle{
+.bi-x-circle, .bi-arrow-counterclockwise, .bi-arrow-clockwise{
     font-size: large;
     cursor: pointer;
+}
+// No pointer-events:none -- it would suppress the title tooltip on a greyed-out
+// control. undo()/redo() already no-op on an empty stack.
+.tool-disabled{
+    opacity: 0.35;
+    cursor: default;
+}
+.pinyin-tts{
+    margin-left: 1rem; // match the eye/Compare/tick/cross rhythm in .actions
+    .badge{
+        font-size: small;
+    }
+    .bi-volume-up-fill{
+        cursor: pointer;
+        margin-left: 0.25rem;
+    }
 }
 .bi-x-circle:active { 
     transform: scale(0.98); 
@@ -73,4 +96,6 @@ canvas {
 }
 .actions{
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 }

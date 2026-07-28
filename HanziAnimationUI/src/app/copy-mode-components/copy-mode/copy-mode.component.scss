@@ -13,24 +13,40 @@ canvas {
 }
 .tools{
     display: flex;
+    align-items: center;
     font-size: small;
-    & div{
+    // Direct children only. As a descendant selector this also hit the div
+    // nested inside .reset, padding it twice and pushing the icon past the
+    // 300px canvas edge.
+    & > div{
         padding: 0 0.5rem;
+    }
+    // The icon controls sit tighter than the labelled inputs.
+    & > .undo, & > .redo, & > .reset{
+        padding: 0 0.2rem;
     }
 }
 .multiple-cards-container{
     display: flex;
     flex-wrap: wrap;
 }
-.bi-x-circle, .bi-arrow-counterclockwise{
+.bi-x-circle, .bi-arrow-counterclockwise, .bi-arrow-clockwise{
     font-size: large;
     cursor: pointer;
 }
-.bi-x-circle:active { 
-    transform: scale(0.98); 
-    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+.bi-x-circle:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
 }
-.bi-arrow-counterclockwise:active { 
-    transform: scale(0.98); 
-    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24); 
+.bi-arrow-counterclockwise:active, .bi-arrow-clockwise:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+// No pointer-events:none -- that would suppress the title tooltip exactly when
+// a user hovers a greyed-out control asking why nothing happened, and would
+// leave a keyboard-reachable element that cannot be activated. undo()/redo()
+// already no-op on an empty stack.
+.tool-disabled{
+    opacity: 0.35;
+    cursor: default;
 }

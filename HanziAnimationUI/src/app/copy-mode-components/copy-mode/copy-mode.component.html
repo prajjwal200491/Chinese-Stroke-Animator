@@ -6,12 +6,16 @@
         <div>
             Brush: <input type="number" id="brushSize" min="1" max="50" [(ngModel)]="brushSize">
         </div>
-        <div class="undo"> 
-            <i (click)="undo()" class="bi bi-arrow-counterclockwise"></i>
+        <div class="undo">
+            <i (click)="undo()" class="bi bi-arrow-counterclockwise" role="button" title="Undo last stroke"
+                [class.tool-disabled]="!canUndo" [attr.aria-disabled]="!canUndo"></i>
         </div>
-        <div>
-            <div class="reset"><i (click)="resetDrawing()" class="bi bi-x-circle"></i></div>
+        <div class="redo">
+            <i (click)="redo()" class="bi bi-arrow-clockwise" role="button" title="Redo stroke"
+                [class.tool-disabled]="!canRedo" [attr.aria-disabled]="!canRedo"></i>
         </div>
+        <div class="reset"><i (click)="resetDrawing()" class="bi bi-x-circle" role="button"
+                title="Clear canvas and restart"></i></div>
     </div>
     <div #mysvg class="svg-container" id="{{characterId}}"></div>
     <canvas #canvas id="canvas" width="300" height="300">

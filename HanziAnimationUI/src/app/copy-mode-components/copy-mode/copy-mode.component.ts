@@ -7,11 +7,19 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import HanziWriter from 'hanzi-writer';
+import HanziWriter, { QuizOptions, StrokeData } from 'hanzi-writer';
+import { CanvasPoint, getCanvasPoint } from 'src/app/common/canvas-pointer';
+import {
+  StrokeHistory,
+  StrokeStyle,
+  redrawStrokes,
+} from 'src/app/common/stroke-history';
 
-interface Point {
-  x: number;
-  y: number;
+interface InkStroke {
+  points: CanvasPoint[];
+  style: StrokeStyle;
+  /** Quiz stroke index at the moment this ink stroke began. */
+  quizStrokeNumBefore: number;
 }
 
 @Component({
@@ -27,17 +35,29 @@ export class CopyModeComponent implements AfterViewInit, OnChanges {
   @ViewChild('mysvg', { static: false }) mysvg!: ElementRef<SVGSVGElement>;
   context: CanvasRenderingContext2D | null = null;
   isDrawing = false;
-  lastX = 0;
-  lastY = 0;
   color = '#000000';
   brushSize = 9;
   characterId: string = 'svgContainer';
   isSingleCharacter = true;
-  points: Point[] = [];
-  totalPointsByStrokes: any = [];
+  private readonly history = new StrokeHistory<InkStroke>();
+  private currentPoints: CanvasPoint[] = [];
+  private currentStyle: StrokeStyle | null = null;
   private writer!: HanziWriter;
+  /** Stroke the quiz expects next. */
+  private quizStrokeNum = 0;
+  /** quizStrokeNum as of the current ink stroke's first point. */
+  private quizStrokeNumAtStrokeStart = 0;
 
-  constructor() { }
+  constructor() {}
+
+  get canUndo(): boolean {
+    return !!this.context && this.history.canUndo;
+  }
+
+  get canRedo(): boolean {
+    return !!this.context && this.history.canRedo;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.singleCharacter?.currentValue) {
       this.isSingleCharacter = true;
@@ -45,101 +65,194 @@ export class CopyModeComponent implements AfterViewInit, OnChanges {
     if (changes?.groups?.currentValue) {
       this.isSingleCharacter = false;
     }
+
+    // This component is reused across searches: main-page keeps the same
+    // instance mounted and only updates the input, so ngAfterViewInit does not
+    // run again. Without this the previous character's ink stays in history and
+    // redo would paint it onto the new character.
+    const change = changes?.singleCharacter;
+    if (
+      change &&
+      !change.firstChange &&
+      change.currentValue &&
+      change.currentValue !== change.previousValue
+    ) {
+      this.resetForNewCharacter(change.currentValue);
+    }
   }
+
   ngAfterViewInit(): void {
     if (this.singleCharacter) {
       this.createHanziAnimation(this.singleCharacter);
-      const canvas = this.canvas.nativeElement;
-      let svg: SVGSVGElement | null =
-        this.mysvg.nativeElement.querySelector('div svg');
+      const svg = this.mysvg.nativeElement.querySelector<SVGSVGElement>('div svg');
       this.context = this.canvas?.nativeElement?.getContext('2d');
       if (!this.context) {
         console.error('Failed to get 2d context from canvas.');
         return;
       }
+      // `const` matters: TypeScript does not carry the null check below into the
+      // nested callbacks for a `let`, so `svg` would stay `SVGSVGElement | null`
+      // at every getCanvasPoint call site.
       if (!svg) return;
+
+      // Listeners stay on the hanzi-writer <svg>, which is also where its own
+      // grading listeners live. Its handlers already call preventDefault() while
+      // a quiz is active, so we must not add preventDefault/stopPropagation.
       svg.addEventListener('mousedown', (e) => {
-        this.startDrawingOnCanvas(e.offsetX, e.offsetY);
+        this.startDrawingOnCanvas(e, svg);
       });
       svg.addEventListener('touchstart', (e) => {
-        const touch = e.touches[0];
-        const svgRect = svg?.getBoundingClientRect();
-        if (svgRect) {
-          const offsetX = touch.clientX - svgRect?.left;
-          const offsetY = touch.clientY - svgRect?.top;
-          this.startDrawingOnCanvas(offsetX, offsetY);
-        }
+        this.startDrawingOnCanvas(e, svg);
       });
       svg.addEventListener('mousemove', (e) => {
-        this.continueDrawingOnCanvas(e.offsetX, e.offsetY);
+        this.continueDrawingOnCanvas(e, svg);
       });
       svg.addEventListener('touchmove', (e) => {
-        const touch = e.touches[0];
-        const svgRect = svg?.getBoundingClientRect();
-        if (svgRect) {
-          const offsetX = touch.clientX - svgRect?.left;
-          const offsetY = touch.clientY - svgRect?.top;
-          this.continueDrawingOnCanvas(offsetX, offsetY);
-        }
+        this.continueDrawingOnCanvas(e, svg);
       });
       svg.addEventListener('mouseup', () => {
         this.stopDrawingOnCanvas();
       });
-      svg.addEventListener('touchend', (e) => {
+      svg.addEventListener('touchend', () => {
         this.stopDrawingOnCanvas();
       });
       svg.addEventListener('mouseleave', () => {
         this.stopDrawingOnCanvas();
       });
-      svg.addEventListener('touchcancel', (e) => {
+      svg.addEventListener('touchcancel', () => {
         this.stopDrawingOnCanvas();
       });
     }
   }
+
   stopDrawingOnCanvas() {
     this.isDrawing = false;
-    if (this.points.length > 0) {
-      this.totalPointsByStrokes.push(this.points);
-      this.points = [];
+    // hanzi-writer discards single-point strokes when grading, so keeping them
+    // here would drift the ink and quiz sequences apart immediately. A stray tap
+    // is not a stroke.
+    if (this.currentPoints.length > 1 && this.currentStyle) {
+      this.history.push({
+        points: this.currentPoints,
+        style: this.currentStyle,
+        // Snapshot taken at stroke START, not read here -- by now hanzi-writer's
+        // document-level endUserStroke may already have graded this attempt and
+        // advanced quizStrokeNum.
+        quizStrokeNumBefore: this.quizStrokeNumAtStrokeStart,
+      });
     }
+    this.currentPoints = [];
+    this.currentStyle = null;
   }
 
-  private startDrawingOnCanvas(x: number, y: number) {
+  private startDrawingOnCanvas(e: MouseEvent | TouchEvent, rectSource: Element) {
     if (!this.context) return;
+    const point = getCanvasPoint(e, rectSource);
+    if (!point) return;
+
     this.isDrawing = true;
-    this.context.strokeStyle = this.color; // Set stroke color
-    this.context.lineWidth = this.brushSize; // Set stroke width
-    this.context.lineCap = 'round'; // Set line cap
+    // Capture the pre-grade quiz index. hanzi-writer's pointer-start handler only
+    // calls Quiz.startUserStroke, which never advances _currentStrokeIndex, so
+    // this read is unconditionally the value from before this attempt --
+    // regardless of listener ordering.
+    this.quizStrokeNumAtStrokeStart = this.quizStrokeNum;
+    this.currentStyle = { color: this.color, brushSize: this.brushSize };
+    this.currentPoints = [point];
+
+    this.context.strokeStyle = this.currentStyle.color;
+    this.context.lineWidth = this.currentStyle.brushSize;
+    this.context.lineCap = 'round';
+    this.context.lineJoin = 'round';
     this.context.beginPath();
-    this.context.moveTo(x, y);
-    this.lastX = x;
-    this.lastY = y;
-    this.points.push({ x, y });
+    this.context.moveTo(point.x, point.y);
   }
 
-  private continueDrawingOnCanvas(x: number, y: number) {
+  private continueDrawingOnCanvas(e: MouseEvent | TouchEvent, rectSource: Element) {
     if (!this.context) return;
-    if (this.isDrawing) {
-      this.context.lineTo(x, y);
-      this.context.stroke();
-      this.lastX = x;
-      this.lastY = y;
-      this.points.push({ x, y });
-    }
+    if (!this.isDrawing) return;
+    const point = getCanvasPoint(e, rectSource);
+    if (!point) return;
+
+    this.context.lineTo(point.x, point.y);
+    this.context.stroke();
+    this.currentPoints.push(point);
+  }
+
+  public undo() {
+    const removed = this.history.undo();
+    if (!removed || !this.context) return;
+    redrawStrokes(this.context, this.canvas.nativeElement, this.history.strokes);
+    // Step the reference character back with the ink so the two stay together.
+    this.startQuizAt(removed.quizStrokeNumBefore);
+  }
+
+  public redo() {
+    const restored = this.history.redo();
+    if (!restored || !this.context) return;
+    redrawStrokes(this.context, this.canvas.nativeElement, this.history.strokes);
+    // Quiz deliberately left alone: the brief accepts ink/quiz desync, and
+    // deriving a forward index adds bookkeeping with no visible gain.
   }
 
   resetDrawing() {
-    this.context?.clearRect(
-      0,
-      0,
-      this.canvas.nativeElement.width,
-      this.canvas.nativeElement.height
-    );
-    this.points = [];
-    this.totalPointsByStrokes = [];
-    this.writer.cancelQuiz();
-    this.writer.hideCharacter();
-    this.writer.quiz();
+    this.history.clear();
+    this.currentPoints = [];
+    this.currentStyle = null;
+    if (this.context) {
+      redrawStrokes(this.context, this.canvas.nativeElement, []);
+    }
+    this.startQuizAt(0);
+  }
+
+  private resetForNewCharacter(character: string): void {
+    this.history.clear();
+    this.currentPoints = [];
+    this.currentStyle = null;
+    this.isDrawing = false;
+    this.quizStrokeNum = 0;
+    this.quizStrokeNumAtStrokeStart = 0;
+    if (this.context) {
+      redrawStrokes(this.context, this.canvas.nativeElement, []);
+    }
+    if (this.writer) {
+      // setCharacter destroys and re-mounts the renderer, so it does not stack a
+      // second <svg> the way another HanziWriter.create() on this id would.
+      this.writer.setCharacter(character);
+      this.startQuizAt(0);
+    }
+  }
+
+  private quizOptions(): Partial<QuizOptions> {
+    return {
+      // Force the reference stroke to commit after ANY attempt, right or wrong,
+      // so the learner never has to get it right before the stroke appears.
+      // Side effect: _handleFailure never runs, so onMistake never fires and
+      // showHintAfterMisses is inert.
+      markStrokeCorrectAfterMisses: 1,
+      leniency: 1.0,
+      acceptBackwardsStrokes: true,
+      // Fires for every attempt now that markStrokeCorrectAfterMisses is 1.
+      // strokeNum is the index just completed (read before the increment).
+      onCorrectStroke: (d: StrokeData) => {
+        this.quizStrokeNum = d.strokeNum + 1;
+      },
+    };
+  }
+
+  /**
+   * The only place quiz() is called.
+   *
+   * quiz() merges its options into the writer permanently, so once a rollback
+   * has passed quizStartStrokeNum any later bare quiz() call would inherit that
+   * index and silently stop resetting. Routing every call through here keeps
+   * quizStartStrokeNum explicit. quiz() also cancels any running quiz itself.
+   */
+  private startQuizAt(index: number): void {
+    if (!this.writer) return;
+    this.quizStrokeNum = Math.max(0, index); // a negative would wrap in fixIndex
+    this.writer.quiz({
+      ...this.quizOptions(),
+      quizStartStrokeNum: this.quizStrokeNum,
+    });
   }
 
   createHanziAnimation(character: string, index?: number): void {
@@ -152,35 +265,10 @@ export class CopyModeComponent implements AfterViewInit, OnChanges {
       showCharacter: false,
       showOutline: true,
       strokeColor: '#EE00FF',
-      showHintAfterMisses: 0,
       leniency: 1.0,
       acceptBackwardsStrokes: true,
     };
     this.writer = HanziWriter.create(id, character, properties);
-    this.writer.quiz();
-  }
-
-  public undo() {
-    if (!this.context) return;
-    // Clear the canvas
-    this.context.clearRect(
-      0,
-      0,
-      this.canvas.nativeElement.width,
-      this.canvas.nativeElement.height
-    );
-
-    // Redraw all points except the last one
-    if (this.totalPointsByStrokes.length > 1) {
-      this.totalPointsByStrokes.pop();
-      this.totalPointsByStrokes.forEach((points: any) => {
-        points.forEach((point: Point, index: number) => {
-          this.context?.beginPath();
-          this.context?.moveTo(point.x, point.y);
-          this.context?.lineTo(point.x, point.y);
-          this.context?.stroke();
-        });
-      });
-    }
+    this.startQuizAt(0);
   }
 }

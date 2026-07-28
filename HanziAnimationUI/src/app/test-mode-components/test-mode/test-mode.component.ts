@@ -2,11 +2,9 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -14,15 +12,32 @@ import { Store } from '@ngrx/store';
 import HanziWriter from 'hanzi-writer';
 import { first } from 'rxjs/operators';
 import { CharacterService } from 'src/app/character.service';
+import { DictionaryService } from 'src/app/dictionary.service';
+import { TimedPoint, getCanvasPoint, isTouchEvent } from 'src/app/common/canvas-pointer';
+import {
+  StrokeHistory,
+  StrokeStyle,
+  redrawStrokes,
+} from 'src/app/common/stroke-history';
 import { setChineseCharacterTickValue } from 'src/app/state/app.actions';
 import { selectChineseCharactersList } from 'src/app/state/app.selector';
+
+interface TimedStroke {
+  points: TimedPoint[];
+  style: StrokeStyle;
+}
+
+interface MergedPoint extends TimedPoint {
+  strokeIndex: number;
+  style: StrokeStyle;
+}
 
 @Component({
   selector: 'app-test-mode',
   templateUrl: './test-mode.component.html',
   styleUrls: ['./test-mode.component.scss'],
 })
-export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
+export class TestModeComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() groups: string[] = [];
   @Input() singleCharacter!: string;
   @ViewChild('canvas', { static: false })
@@ -31,24 +46,43 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
   isSingleCharacter = true;
   context: CanvasRenderingContext2D | null = null;
   isDrawing = false;
-  lastX = 0;
-  lastY = 0;
   color = '#000000';
   brushSize = 9;
-  isCharacterTestCorrect=false;
-  isCharacterTestCross=false;
+  isCharacterTestCorrect = false;
+  isCharacterTestCross = false;
+  pinyin = '';
   private writer!: HanziWriter;
   toggleShowHide = true;
-  private strokes: { x: number; y: number; time: number }[][] = [];
-  private currentStroke: { x: number; y: number; time: number }[] = [];
-  private isRecording = false;
-  timeoutId:any=undefined;
-  static strokeData:any;
-  static summaryData:any;
+  private readonly history = new StrokeHistory<TimedStroke>();
+  private currentPoints: TimedPoint[] = [];
+  private currentStyle: StrokeStyle | null = null;
+  timeoutId: any = undefined;
+  /**
+   * Bumped whenever the canvas is repainted from history. A replay in flight
+   * checks it and bails, so undo/redo during Compare cannot be painted over.
+   * clearTimeout alone was not enough -- timeoutId only ever held the newest
+   * pending frame of the chain.
+   */
+  private replayToken = 0;
+  static strokeData: any;
+  static summaryData: any;
 
-  constructor(private readonly characterS:CharacterService, private readonly store:Store) {}
+  constructor(
+    private readonly characterS: CharacterService,
+    private readonly store: Store,
+    private readonly dictionary: DictionaryService
+  ) {}
 
   ngOnInit(): void {}
+
+  get canUndo(): boolean {
+    return !!this.context && this.history.canUndo;
+  }
+
+  get canRedo(): boolean {
+    return !!this.context && this.history.canRedo;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.singleCharacter?.currentValue) {
       this.isSingleCharacter = true;
@@ -56,20 +90,38 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
     if (changes?.groups?.currentValue) {
       this.isSingleCharacter = false;
     }
-    this.store.select(selectChineseCharactersList).pipe(first()).subscribe(charactersWithTickedVal=>{
-      if(changes?.character?.currentValue && changes?.character?.currentValue !== changes?.character?.previousValue){
-       const match = charactersWithTickedVal.find(c=>c.character===changes.character.currentValue);
-       if(match && match.hasOwnProperty('isTicked') && match.isTicked){
-        this.isCharacterTestCorrect = true;
-        this.isCharacterTestCross = false;
-       } 
-       else if(match && match.hasOwnProperty('isTicked') && !match.isTicked){
-        this.isCharacterTestCross = true;
-        this.isCharacterTestCorrect = false;
-       }
+
+    // This component's inputs are singleCharacter/groups, so the tick/cross
+    // restore below previously read changes.character -- always undefined, so
+    // stored state never came back in the single-character view.
+    const change = changes?.singleCharacter;
+    if (change?.currentValue && change.currentValue !== change.previousValue) {
+      const character: string = change.currentValue;
+
+      if (!change.firstChange) {
+        // main-page keeps this instance mounted across searches and only updates
+        // the input, so ngAfterViewInit does not run again. Without clearing,
+        // redo would paint the previous character's ink onto the new one.
+        this.resetForNewCharacter(character);
       }
-    })
+
+      this.dictionary.getPinyin(character).subscribe((p) => (this.pinyin = p));
+
+      this.isCharacterTestCorrect = false;
+      this.isCharacterTestCross = false;
+      this.store
+        .select(selectChineseCharactersList)
+        .pipe(first())
+        .subscribe((charactersWithTickedVal) => {
+          const match = charactersWithTickedVal.find((c) => c.character === character);
+          if (match && match.hasOwnProperty('isTicked')) {
+            this.isCharacterTestCorrect = !!match.isTicked;
+            this.isCharacterTestCross = !match.isTicked;
+          }
+        });
+    }
   }
+
   ngAfterViewInit(): void {
     if (this.singleCharacter) {
       this.createHanziAnimation(this.singleCharacter);
@@ -81,112 +133,103 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
     }
   }
 
-  private startRecording() {
-    if (this.isDrawing) {
-      this.isRecording = true;
-      this.currentStroke = [];
-      this.canvas.nativeElement.addEventListener('mousemove', (event) => {
-        this.recordDrawing(event);
-      });
-      this.canvas.nativeElement.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-        this.recordDrawing(event);
-      });
-    }
-  }
-
-  private stopRecording() {
-    if (this.isRecording) {
-      this.isRecording = false;
-      this.strokes.push(this.currentStroke);
-      this.currentStroke = [];
-      this.isDrawing = false;
-
-      this.canvas.nativeElement.removeEventListener('mousemove', (event) =>
-        this.recordDrawing(event)
-      );
-    }
-  }
-
-  
-
-  private recordDrawing(event: MouseEvent | TouchEvent) {
-    if (this.isRecording && this.isDrawing) {
-      const rect = this.canvas.nativeElement.getBoundingClientRect();
-      let x, y;
-      if(event instanceof MouseEvent){
-         x = event.clientX - rect.left;
-         y = event.clientY - rect.top;
-      }
-      if (event instanceof TouchEvent) {
-        const touch = event.touches[0];
-        x = touch.clientX - rect.left;
-        y = touch.clientY - rect.top;
-      }
-      
-      const time = Date.now();
-      if(x && y){
-        this.currentStroke.push({ x, y, time });
-
-      this.drawPoint(x, y);
-      }
-      
-    }
-  }
-
-  private drawPoint(x: number, y: number) {
+  startDrawing(e: MouseEvent | TouchEvent) {
     if (!this.context) return;
-    this.context.beginPath();
-    this.context.arc(x, y, 3, 0, 2 * Math.PI);
-    this.context.fillStyle = 'black';
-    this.context.fill();
+    const point = getCanvasPoint(e, this.canvas.nativeElement);
+    if (!point) return;
+
+    this.isDrawing = true;
+    this.currentStyle = { color: this.color, brushSize: this.brushSize };
+    this.currentPoints = [{ ...point, time: Date.now() }];
   }
 
-  mergeStrokes(strokes: { x: number; y: number; time: number }[][]) {
-    let mergedStrokes: any = [];
-    if (strokes.length > 0) {
-      strokes.forEach((stroke, index) => {
-        let currentStroke = stroke;
-        currentStroke = currentStroke.map((s) => {
-          return {
-            ...s,
-            strokeIndex: index,
-          };
-        });
-        mergedStrokes = [...mergedStrokes, ...currentStroke];
-      });
+  draw(e: MouseEvent | TouchEvent) {
+    if (!this.isDrawing) return;
+    if (!this.context || !this.currentStyle) return;
+    if (isTouchEvent(e)) {
+      // Belt and braces alongside `touch-action: none` in the stylesheet, so a
+      // stroke never fights the page scroll on mobile.
+      e.preventDefault();
     }
+    const point = getCanvasPoint(e, this.canvas.nativeElement);
+    if (!point) return;
+
+    const previous = this.currentPoints[this.currentPoints.length - 1];
+    this.currentPoints.push({ ...point, time: Date.now() });
+
+    this.context.strokeStyle = this.currentStyle.color;
+    this.context.lineWidth = this.currentStyle.brushSize;
+    this.context.lineCap = 'round';
+    this.context.lineJoin = 'round';
+    this.context.beginPath();
+    this.context.moveTo(previous ? previous.x : point.x, previous ? previous.y : point.y);
+    this.context.lineTo(point.x, point.y);
+    this.context.stroke();
+  }
+
+  stopDrawing() {
+    if (!this.isDrawing) return;
+    this.isDrawing = false;
+    if (this.currentPoints.length > 1 && this.currentStyle) {
+      this.history.push({ points: this.currentPoints, style: this.currentStyle });
+    }
+    this.currentPoints = [];
+    this.currentStyle = null;
+  }
+
+  undo() {
+    const removed = this.history.undo();
+    if (!removed || !this.context) return;
+    this.cancelPlayback();
+    redrawStrokes(this.context, this.canvas.nativeElement, this.history.strokes);
+  }
+
+  redo() {
+    const restored = this.history.redo();
+    if (!restored || !this.context) return;
+    this.cancelPlayback();
+    redrawStrokes(this.context, this.canvas.nativeElement, this.history.strokes);
+  }
+
+  private cancelPlayback(): void {
+    this.replayToken++;
+    clearTimeout(this.timeoutId);
+  }
+
+  mergeStrokes(strokes: readonly TimedStroke[]): MergedPoint[] {
+    let mergedStrokes: MergedPoint[] = [];
+    strokes.forEach((stroke, index) => {
+      const points = stroke.points.map((p) => ({
+        ...p,
+        strokeIndex: index,
+        style: stroke.style,
+      }));
+      mergedStrokes = [...mergedStrokes, ...points];
+    });
     return mergedStrokes;
   }
 
   playRecording() {
-    this.context?.clearRect(
+    if (!this.context) return;
+    this.cancelPlayback();
+    this.context.clearRect(
       0,
       0,
       this.canvas.nativeElement.width,
       this.canvas.nativeElement.height
     );
-    const mergedS = this.mergeStrokes(this.strokes);
-    const queue = [...mergedS]; // Copy strokes to a new array
-
-    const drawNextStroke = () => {
-      if (queue.length > 0) {
-        this.drawStrokeWithTiming(queue);
-      }
-    };
-
-    drawNextStroke();
-    //this.strokes = [];
+    const merged = this.mergeStrokes(this.history.strokes);
+    if (merged.length > 0) {
+      this.drawStrokeWithTiming(merged, this.replayToken);
+    }
   }
 
-  drawStrokeWithTiming(
-    stroke:
-      | { x: number; y: number; time: number; strokeIndex: number }[]
-      | undefined
-  ) {
+  drawStrokeWithTiming(stroke: MergedPoint[] | undefined, token: number) {
     let index = 0;
 
     const drawNextSegment = () => {
+      // A repaint from history (undo/redo/reset) invalidates this replay.
+      if (token !== this.replayToken) return;
       if (!this.context || !stroke) return;
 
       if (index < stroke.length - 1) {
@@ -196,13 +239,15 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
           this.context.beginPath();
           this.context.moveTo(startPoint.x, startPoint.y);
           this.context.lineTo(endPoint.x, endPoint.y);
-          this.context.strokeStyle = 'black';
-          this.context.lineWidth = 9; // Adjust the stroke width
+          this.context.strokeStyle = startPoint.style.color;
+          this.context.lineWidth = startPoint.style.brushSize;
+          this.context.lineCap = 'round';
+          this.context.lineJoin = 'round';
           this.context.stroke();
         }
 
-        const timeDifference = stroke[index + 1].time - startPoint.time;
-        this.timeoutId = setTimeout(drawNextSegment, timeDifference); // Adjust the delay based on the time difference
+        const timeDifference = Math.max(0, endPoint.time - startPoint.time);
+        this.timeoutId = setTimeout(drawNextSegment, timeDifference);
         index++;
       }
     };
@@ -210,103 +255,64 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
     drawNextSegment();
   }
 
-  startDrawing(e: MouseEvent | TouchEvent) {
-    if(e instanceof TouchEvent){
-      const clientX = e.touches[0].clientX
-    const clientY = e.touches[0].clientY
-    this.isDrawing = true;
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
-    [this.lastX, this.lastY] = [clientX-rect.left, clientY-rect.top];
-    this.startRecording();
-    }
-    if(e instanceof MouseEvent){
-      this.isDrawing = true;
-    [this.lastX, this.lastY] = [e.offsetX, e.offsetY];
-    this.startRecording();
-    }
-  }
-
-  draw(e: MouseEvent | TouchEvent) {
-    if (!this.isDrawing) return;
-    if (!this.context) return;
-    if (e instanceof TouchEvent) {
-      const clientX = e.touches[0].clientX;
-      const clientY = e.touches[0].clientY;
-      const rect = (e.target as HTMLElement).getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      this.context.strokeStyle = this.color;
-      this.context.lineWidth = this.brushSize;
-      this.context.lineCap = 'round';
-
-      this.context.beginPath();
-      this.context.moveTo(this.lastX, this.lastY);
-      this.context.lineTo(x, y);
-      this.context.stroke();
-      [this.lastX, this.lastY] = [x, y];
-    }
-    if (e instanceof MouseEvent) {
-      this.context.strokeStyle = this.color;
-      this.context.lineWidth = this.brushSize;
-      this.context.lineCap = 'round';
-
-      this.context.beginPath();
-      this.context.moveTo(this.lastX, this.lastY);
-      this.context.lineTo(e.offsetX, e.offsetY);
-      this.context.stroke();
-      [this.lastX, this.lastY] = [e.offsetX, e.offsetY];
-    }
-  }
-
-  stopDrawing() {
-    this.isDrawing = false;
-    this.stopRecording();
-  }
   resetDrawing() {
-    this.context?.clearRect(
-      0,
-      0,
-      this.canvas.nativeElement.width,
-      this.canvas.nativeElement.height
-    );
-    clearTimeout(this.timeoutId);
-    this.strokes=[];
+    this.cancelPlayback();
+    this.history.clear();
+    this.currentPoints = [];
+    this.currentStyle = null;
+    this.isDrawing = false;
+    if (this.context) {
+      redrawStrokes(this.context, this.canvas.nativeElement, []);
+    }
+  }
+
+  private resetForNewCharacter(character: string): void {
+    this.resetDrawing();
+    this.toggleShowHide = true;
+    if (this.writer) {
+      this.writer.setCharacter(character);
+    }
+  }
+
+  speak() {
+    this.dictionary.speak(this.singleCharacter);
   }
 
   showHideCharacter() {
     this.toggleShowHide = !this.toggleShowHide;
-    this.toggleShowHide
-      ? this.writer.showCharacter()
-      : this.writer.hideCharacter();
+    this.toggleShowHide ? this.writer.showCharacter() : this.writer.hideCharacter();
   }
 
-  runAnimation(){
+  runAnimation() {
     this.writer.animateCharacter();
   }
 
-  onCompare(){
+  onCompare() {
     this.runAnimation();
     this.playRecording();
   }
 
-  onComparisonCheck(isChecked:boolean){
-    const data={
+  onComparisonCheck(isChecked: boolean) {
+    const data = {
       isTicked: isChecked,
-      characterValue: this.singleCharacter
-    }
-    if(isChecked){
+      characterValue: this.singleCharacter,
+    };
+    if (isChecked) {
       this.isCharacterTestCorrect = true;
-      this.isCharacterTestCross=false;
-    }
-    else{
+      this.isCharacterTestCross = false;
+    } else {
       this.isCharacterTestCross = true;
-      this.isCharacterTestCorrect=false;
+      this.isCharacterTestCorrect = false;
     }
     this.characterS.setComparisonValues(data);
-    this.store.dispatch(setChineseCharacterTickValue({chineseCharacter:{
-      character:data.characterValue,
-      isTicked: data.isTicked
-    }}))
+    this.store.dispatch(
+      setChineseCharacterTickValue({
+        chineseCharacter: {
+          character: data.characterValue,
+          isTicked: data.isTicked,
+        },
+      })
+    );
   }
 
   createHanziAnimation(character: string, index?: number): void {
@@ -321,10 +327,10 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
     };
     this.writer = HanziWriter.create(id, character, properties);
   }
-  get strokeData(){
+  get strokeData() {
     return TestModeComponent.strokeData;
   }
-  get summaryData(){
+  get summaryData() {
     return TestModeComponent.summaryData;
   }
   createHanziQuiz(): void {
@@ -336,25 +342,15 @@ export class TestModeComponent implements OnInit, AfterViewInit,OnChanges {
     };
     const w = HanziWriter.create('quiz-mode', this.singleCharacter, properties);
     w.quiz({
-      onMistake: function(strokeData) {
+      onMistake: function (strokeData) {
         TestModeComponent.strokeData = strokeData;
-        console.log('Oh no! you made a mistake on stroke ' + strokeData.strokeNum);
-        console.log("You've made " + strokeData.mistakesOnStroke + " mistakes on this stroke so far");
-        console.log("You've made " + strokeData.totalMistakes + " total mistakes on this quiz");
-        console.log("There are " + strokeData.strokesRemaining + " strokes remaining in this character");
       },
-      onCorrectStroke: function(strokeData) {
+      onCorrectStroke: function (strokeData) {
         TestModeComponent.strokeData = strokeData;
-        console.log('Yes!!! You got stroke ' + strokeData.strokeNum + ' correct!');
-        console.log('You made ' + strokeData.mistakesOnStroke + ' mistakes on this stroke');
-        console.log("You've made " + strokeData.totalMistakes + ' total mistakes on this quiz');
-        console.log('There are ' + strokeData.strokesRemaining + ' strokes remaining in this character');
       },
-      onComplete: function(summaryData) {
-        TestModeComponent.summaryData=summaryData;
-        console.log('You did it! You finished drawing ' + summaryData.character);
-        console.log('You made ' + summaryData.totalMistakes + ' total mistakes on this quiz');
-      }
+      onComplete: function (summaryData) {
+        TestModeComponent.summaryData = summaryData;
+      },
     });
   }
 }

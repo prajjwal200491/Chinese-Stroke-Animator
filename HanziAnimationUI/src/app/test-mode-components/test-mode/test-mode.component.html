@@ -13,21 +13,35 @@
                         [ngClass]="{'bulged-tick': isCharacterTestCorrect}"></i></div>
                 <div (click)="onComparisonCheck(false)" style="margin-left: 1rem;"><i class="bi bi-x"
                         [ngClass]="{'bulged-cross': isCharacterTestCross}"></i></div>
+                <div class="pinyin-tts">
+                    <span class="badge badge-success">
+                        <span *ngIf="pinyin">{{ pinyin }}</span>
+                        <i class="bi bi-volume-up-fill" role="button" title="Play pronunciation"
+                            (click)="speak()"></i>
+                    </span>
+                </div>
             </div>
             <div class="svg-container" id="{{characterId}}">
             </div>
         </div>
         <div style="margin-top: 0.5rem;">
             <div class="tools">
-                <div>
-                    <div class="reset"><i (click)="resetDrawing()" class="bi bi-x-circle"></i></div>
+                <div class="undo">
+                    <i (click)="undo()" class="bi bi-arrow-counterclockwise" role="button" title="Undo last stroke"
+                        [class.tool-disabled]="!canUndo" [attr.aria-disabled]="!canUndo"></i>
                 </div>
+                <div class="redo">
+                    <i (click)="redo()" class="bi bi-arrow-clockwise" role="button" title="Redo stroke"
+                        [class.tool-disabled]="!canRedo" [attr.aria-disabled]="!canRedo"></i>
+                </div>
+                <div class="reset"><i (click)="resetDrawing()" class="bi bi-x-circle" role="button"
+                        title="Clear canvas"></i></div>
 
             </div>
-            <canvas #canvas id="canvas" width="300" height="300" (mousedown)="startDrawing($event)"
+            <canvas #canvas width="300" height="300" (mousedown)="startDrawing($event)"
                 (mousemove)="draw($event)" (mouseup)="stopDrawing()" (mouseout)="stopDrawing()"
                 (mouseleave)="stopDrawing()" (touchstart)="startDrawing($event)" (touchmove)="draw($event)"
-                (touchend)="stopDrawing()" (touchcancel)="stopDrawing()" (touchcancel)="stopDrawing()">
+                (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
             </canvas>
         </div>
     </div>

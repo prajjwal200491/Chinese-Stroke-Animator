@@ -77,12 +77,6 @@ export class TestModeListComponent implements OnInit, OnChanges {
     }
   }
 
-  speak(character: string): void {
-    const utterance = new SpeechSynthesisUtterance(character);
-    utterance.lang = 'zh-CN';
-    speechSynthesis.speak(utterance);
-  }
-
   showPinyin(){
     this.revealPinyins = !this.revealPinyins;
   }
