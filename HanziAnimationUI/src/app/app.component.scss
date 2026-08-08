@@ -29,13 +29,12 @@
   }
 }
 
-// Visible spinner shown while any backend request is pending. The thin top bar
-// alone is blue-on-blue against the header and easy to miss, so surface an
-// obvious icon. Non-blocking (pointer-events: none) — it never traps the user.
-.global-loading-spinner {
+// Centered loading card shown while any backend request is pending. It fades
+// in after a short delay so quick requests don't flash it, and it never blocks
+// the page (pointer-events: none) — the user can keep interacting underneath.
+.global-loading-overlay {
   position: fixed;
-  top: 14px;
-  right: 18px;
+  inset: 0;
   z-index: 2200;
   display: flex;
   align-items: center;
@@ -43,50 +42,49 @@
   pointer-events: none;
 }
 
-.global-loading-spinner__icon {
-  width: 22px;
-  height: 22px;
-  border: 3px solid rgba(255, 255, 255, 0.45);
-  border-top-color: #fff;
+.global-loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 320px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  text-align: center;
+  opacity: 0;
+  animation: global-loading-fade-in 0.25s ease-out 0.25s forwards;
+}
+
+.global-loading-card__spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(29, 78, 216, 0.18);
+  border-top-color: #1d4ed8;
   border-radius: 50%;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   animation: global-loading-spin 0.8s linear infinite;
 }
 
-@keyframes global-loading-spin {
+.global-loading-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.global-loading-card__hint {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+@keyframes global-loading-fade-in {
   to {
-    transform: rotate(360deg);
+    opacity: 1;
   }
 }
 
-.server-wakeup-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 16px;
-  background: #1d4ed8;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.server-wakeup-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: server-wakeup-spin 0.8s linear infinite;
-}
-
-@keyframes server-wakeup-spin {
+@keyframes global-loading-spin {
   to {
     transform: rotate(360deg);
   }
