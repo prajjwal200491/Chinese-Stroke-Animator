@@ -38,6 +38,7 @@ import { CommonModule } from '@angular/common';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ProfileComponent } from './profile/profile.component';
 import { LoggedOutComponent } from './logged-out/logged-out.component';
+import { WordImportComponent } from './word-import/word-import.component';
 
 
 @NgModule({
@@ -68,7 +69,8 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
     DisplayCardComponent,
     TickOrCrossComponent,
     ProfileComponent,
-    LoggedOutComponent
+    LoggedOutComponent,
+    WordImportComponent
   ],
   imports: [
     BrowserModule,

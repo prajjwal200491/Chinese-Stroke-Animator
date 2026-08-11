@@ -1,0 +1,58 @@
+<!-- Camera trigger, sits in the search row next to the search bar -->
+<button type="button" class="btn btn-outline-secondary camera-btn"
+        title="Import words using camera or photo"
+        aria-label="Import words using camera or photo"
+        (click)="fileInput.click()">
+  <i class="bi bi-camera"></i>
+</button>
+<input #fileInput type="file" accept="image/*" capture="environment"
+       hidden (change)="onFileSelected($event)">
+
+<!-- Import modal -->
+<div class="modal fade" id="wordImportModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Import Words</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img *ngIf="previewUrl" [src]="previewUrl" class="preview-img" alt="Selected photo">
+
+        <div class="photo-actions" *ngIf="previewUrl">
+          <button *ngIf="chips.length === 0" type="button" class="btn import-btn"
+                  [disabled]="isLoading" (click)="runOcr()">Import Words</button>
+          <button type="button" class="btn btn-link retake-btn"
+                  [disabled]="isLoading" (click)="fileInput.click()">Choose another photo</button>
+        </div>
+
+        <div *ngIf="isLoading" class="ocr-loading">
+          <span class="spinner-border spinner-border-sm"></span> Recognizing text…
+        </div>
+        <div *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</div>
+
+        <ng-container *ngIf="chips.length > 0">
+          <p class="chip-hint">Tap a word to select or deselect it:</p>
+          <div class="chip-grid">
+            <span *ngFor="let chip of chips" class="word-chip"
+                  [class.selected]="chip.selected" (click)="toggleChip(chip)">
+              {{ chip.value }}
+            </span>
+          </div>
+        </ng-container>
+      </div>
+      <div class="modal-footer" *ngIf="chips.length > 0">
+        <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" [disabled]="selectedCount === 0"
+                (click)="addSelectedWords()">
+          Add selected words ({{ selectedCount }})
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dedicated Create modal, seeded with the selected words. Lives here (left
+     column) because the sidebar's #listModal is display:none on mobile. -->
+<app-modal [modalId]="'importListModal'" [header]="'Create'"
+           [initialWords]="wordsToSeed"></app-modal>

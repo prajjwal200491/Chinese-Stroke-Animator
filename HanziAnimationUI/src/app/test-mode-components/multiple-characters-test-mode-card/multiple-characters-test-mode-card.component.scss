@@ -24,6 +24,7 @@ canvas {
     //pointer-events: none; /* So that the SVG doesn't intercept mouse events */
     opacity: 0.6;
     background: #DDEAED;
+    width: 250px; // match the 250x250 HanziWriter/canvas so the box doesn't stretch the column
 }
 .tools{
     display: flex;

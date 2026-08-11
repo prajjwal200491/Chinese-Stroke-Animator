@@ -128,11 +128,11 @@
             <input
               type="checkbox"
               class="custom-control-input"
-              id="customSwitchToggle"
+              [id]="modalId + 'PublicSwitch'"
               (change)="toggleIsPublic()"
               [checked]="data ? data.isPublic : isPublic"
             />
-            <label class="custom-control-label" for="customSwitchToggle"
+            <label class="custom-control-label" [attr.for]="modalId + 'PublicSwitch'"
               >isPublic</label
             >
           </div>

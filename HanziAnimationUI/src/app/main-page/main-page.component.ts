@@ -22,7 +22,9 @@ export class MainPageComponent implements OnInit {
   chineseTxt:string='';
   recentlyTyped$!: Observable<string[]>;
   latestCharacter!:string;
-  groupCharacters!:string[];
+  // Initialized so the template's groupCharacters.length checks don't throw
+  // (and abort change detection) before the first character loads.
+  groupCharacters:string[]=[];
   listData!: any;
   modalHeader: string = 'Create';
   listname!: string;

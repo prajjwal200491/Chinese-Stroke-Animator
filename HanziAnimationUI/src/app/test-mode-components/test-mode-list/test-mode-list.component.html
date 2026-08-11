@@ -1,7 +1,7 @@
-<button class="btn btn-primary pinyin-btn" (click)="showPinyin()">Pinyin</button>
-<div class="row">
-    <div class="col-10">
-        <div *ngIf="characterList.length>0" class="my-5">
+<button class="btn btn-primary pinyin-btn" [ngClass]="{'btn-sm': compact}" (click)="showPinyin()">Pinyin</button>
+<div class="row" [ngClass]="{'compact': compact}">
+    <div [ngClass]="compact ? 'col-12' : 'col-10'">
+        <div *ngIf="characterList.length>0" [ngClass]="{'my-5': !compact}">
             <div class="card-list">
                 <div *ngFor="let ch of characterList;let i=index">
                     <app-display-card [character]="ch" [index]="i" [revealPinyins]="revealPinyins" (onTestModeCharacterClick)="onTestModeCharacterClick.emit($event)"></app-display-card>

@@ -146,3 +146,20 @@
     }
   }
 
+  // Mobile test mode: keep the word list reachable while scrolling/drawing.
+  .floating-test-list{
+    position: fixed;
+    top: 10rem; // below the search row, beside the character box
+    right: 4px;
+    width: 34vw;
+    min-width: 110px;
+    max-width: 160px;
+    max-height: 55vh;
+    overflow-y: auto;
+    z-index: 1030; // above content, below Bootstrap modal (1050)
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 0.25rem;
+  }
+

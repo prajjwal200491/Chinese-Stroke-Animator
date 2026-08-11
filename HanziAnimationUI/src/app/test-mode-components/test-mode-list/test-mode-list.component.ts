@@ -19,6 +19,7 @@ export interface CharacterList{
 })
 export class TestModeListComponent implements OnInit, OnChanges {
   @Input() cards: any;
+  @Input() compact = false;
   @Output() onTestModeCharacterClick = new EventEmitter();
   characters: Character[] = [];
   characterList: CharacterList[]=[];

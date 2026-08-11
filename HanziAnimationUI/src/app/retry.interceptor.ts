@@ -32,6 +32,14 @@ export class RetryInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
+    // OCR uploads must not be blindly retried: a 500 means the OCR model
+    // failed on this image and would fail again 6 more times, re-uploading a
+    // multi-MB photo each try. The import UI shows the error and lets the
+    // user retry manually.
+    if (req.url.indexOf('/api/ocr') !== -1) {
+      return next.handle(req);
+    }
+
     let showingIndicator = false;
     this.loading.start(); // API call is now pending
 

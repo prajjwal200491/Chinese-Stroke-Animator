@@ -25,6 +25,7 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() list!: List;
   @Input() disabled!: boolean;
   @Input() openModal!: boolean;
+  @Input() initialWords: string[] = [];
   listForm: FormGroup;
   wordList: Character[] = [];
   deletedWordList: Character[] = [];
@@ -87,11 +88,24 @@ export class ModalComponent implements OnInit, OnChanges, AfterViewInit {
       this.showWordCard=true;
       this.showWords=true
     }
+    if (changes?.initialWords?.currentValue?.length) {
+      const seeded = (changes.initialWords.currentValue as string[])
+        .map(w => w.split(' ').join('')) // same normalization as addToWordsList
+        .filter(w => w && !this.wordList.some(c => c.value === w))
+        .map(w => ({ value: w, active: false }));
+      this.wordList = [...this.wordList, ...seeded];
+      // Progressive reveal normally waits for the name fields to be dirtied;
+      // a seeded import should show the whole form at once.
+      this.showWordCard = true;
+      this.showWords = true;
+    }
 
   }
 
   ngOnInit(): void {
-    this.wordList = [...this.list?.characters];
+    // Guard the spread: instances without a [list] input ('listModal', the
+    // word-import modal) used to throw here, silently aborting ngOnInit.
+    this.wordList = [...(this.list?.characters ?? [])];
 
     this.listForm.patchValue({
       //name: this.nameWithSpaces,

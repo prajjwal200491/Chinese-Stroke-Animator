@@ -4,6 +4,7 @@ import {
   ElementRef,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild,
@@ -33,13 +34,17 @@ interface MergedPoint extends TimedPoint {
   style: StrokeStyle;
 }
 
+// Preview window: long enough to hint the eye toggle exists, short enough
+// that the user can't study the character before testing themselves.
+const AUTO_HIDE_DELAY_MS = 1000;
+
 @Component({
   selector: 'app-multiple-characters-test-mode-card',
   templateUrl: './multiple-characters-test-mode-card.component.html',
   styleUrls: ['./multiple-characters-test-mode-card.component.scss'],
 })
 export class MultipleCharactersTestModeCardComponent
-  implements OnInit, AfterViewInit, OnChanges
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
 {
   @Input() character!: string;
   @Input() characterIndex!: number;
@@ -61,6 +66,7 @@ export class MultipleCharactersTestModeCardComponent
   pinyin = '';
   private writer!: HanziWriter;
   charactersWithTickedVal!: ChineseCharacter[];
+  private autoHideTimerId: ReturnType<typeof setTimeout> | undefined;
 
   constructor(
     private readonly characterS: CharacterService,
@@ -110,12 +116,18 @@ export class MultipleCharactersTestModeCardComponent
   ngAfterViewInit(): void {
     if (this.character && this.characterIndex !== undefined) {
       this.createHanziAnimation(this.character, this.characterIndex);
+      this.scheduleAutoHide();
       this.context = this.canvas?.nativeElement?.getContext('2d');
       if (!this.context) {
         console.error('Failed to get 2d context from canvas.');
         return;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.clearAutoHideTimer();
+    this.cancelPlayback();
   }
 
   startDrawing(e: MouseEvent | TouchEvent) {
@@ -297,10 +309,31 @@ export class MultipleCharactersTestModeCardComponent
 
   private resetForNewCharacter(character: string): void {
     this.resetDrawing();
-    this.toggleShowHide = true;
     if (this.writer) {
       this.writer.setCharacter(character);
     }
+    this.scheduleAutoHide();
+  }
+
+  private clearAutoHideTimer(): void {
+    if (this.autoHideTimerId !== undefined) {
+      clearTimeout(this.autoHideTimerId);
+      this.autoHideTimerId = undefined;
+    }
+  }
+
+  private scheduleAutoHide(): void {
+    this.clearAutoHideTimer();
+    this.toggleShowHide = true;
+    // hideCharacter() persists showCharacter=false in the writer's options, so
+    // without an explicit show the next setCharacter() renders pre-hidden and
+    // the preview never appears.
+    this.writer?.showCharacter();
+    this.autoHideTimerId = setTimeout(() => {
+      this.autoHideTimerId = undefined;
+      this.toggleShowHide = false;
+      this.writer?.hideCharacter();
+    }, AUTO_HIDE_DELAY_MS);
   }
 
   speak() {
@@ -308,6 +341,8 @@ export class MultipleCharactersTestModeCardComponent
   }
 
   showHideCharacter() {
+    // A manual click wins over a pending auto-hide.
+    this.clearAutoHideTimer();
     this.toggleShowHide = !this.toggleShowHide;
     this.toggleShowHide ? this.writer.showCharacter() : this.writer.hideCharacter();
   }

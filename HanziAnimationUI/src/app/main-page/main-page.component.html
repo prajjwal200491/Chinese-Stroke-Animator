@@ -19,6 +19,7 @@
               (click)="textChange()">Search</div>
           </div>
         </div>
+        <app-word-import></app-word-import>
       </div>
       <div class="toggle-modes">
         <div class="custom-control custom-switch">
@@ -54,6 +55,11 @@
           </ng-template>
         </ng-container>
         <!----------------------------- Test Mode ----------------------------------------->
+
+        <!-- Mobile-only floating word list so the next word stays reachable while testing -->
+        <div class="floating-test-list" *ngIf="isMobile && isTestMode && !sidebarVisible">
+          <app-character-list [listname]="listname" [isTestMode]="true" [compact]="true"></app-character-list>
+        </div>
       </ng-container>
 
       <!----------------------------- Main View ----------------------------------------->

@@ -17,8 +17,9 @@ export class CharacterListComponent implements OnInit, OnChanges {
 customList$!: Observable<List[]>;
 modalHeader: string = 'Create';
 @ViewChild('list') list!: HTMLElement;
-@Input() listname!: string; 
-@Input() isTestMode=false; 
+@Input() listname!: string;
+@Input() isTestMode=false;
+@Input() compact=false;
 selectedList: any;
 selectedListValues:any;
 selectedCharacterCardName!:string;

@@ -4,6 +4,7 @@ import {
   ElementRef,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild,
@@ -32,12 +33,18 @@ interface MergedPoint extends TimedPoint {
   style: StrokeStyle;
 }
 
+// Preview window: long enough to hint the eye toggle exists, short enough
+// that the user can't study the character before testing themselves.
+const AUTO_HIDE_DELAY_MS = 1000;
+
 @Component({
   selector: 'app-test-mode',
   templateUrl: './test-mode.component.html',
   styleUrls: ['./test-mode.component.scss'],
 })
-export class TestModeComponent implements OnInit, AfterViewInit, OnChanges {
+export class TestModeComponent
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
+{
   @Input() groups: string[] = [];
   @Input() singleCharacter!: string;
   @ViewChild('canvas', { static: false })
@@ -53,6 +60,7 @@ export class TestModeComponent implements OnInit, AfterViewInit, OnChanges {
   pinyin = '';
   private writer!: HanziWriter;
   toggleShowHide = true;
+  private autoHideTimerId: ReturnType<typeof setTimeout> | undefined;
   private readonly history = new StrokeHistory<TimedStroke>();
   private currentPoints: TimedPoint[] = [];
   private currentStyle: StrokeStyle | null = null;
@@ -125,12 +133,18 @@ export class TestModeComponent implements OnInit, AfterViewInit, OnChanges {
   ngAfterViewInit(): void {
     if (this.singleCharacter) {
       this.createHanziAnimation(this.singleCharacter);
+      this.scheduleAutoHide();
       this.context = this.canvas?.nativeElement?.getContext('2d');
       if (!this.context) {
         console.error('Failed to get 2d context from canvas.');
         return;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.clearAutoHideTimer();
+    this.cancelPlayback();
   }
 
   startDrawing(e: MouseEvent | TouchEvent) {
@@ -268,10 +282,31 @@ export class TestModeComponent implements OnInit, AfterViewInit, OnChanges {
 
   private resetForNewCharacter(character: string): void {
     this.resetDrawing();
-    this.toggleShowHide = true;
     if (this.writer) {
       this.writer.setCharacter(character);
     }
+    this.scheduleAutoHide();
+  }
+
+  private clearAutoHideTimer(): void {
+    if (this.autoHideTimerId !== undefined) {
+      clearTimeout(this.autoHideTimerId);
+      this.autoHideTimerId = undefined;
+    }
+  }
+
+  private scheduleAutoHide(): void {
+    this.clearAutoHideTimer();
+    this.toggleShowHide = true;
+    // hideCharacter() persists showCharacter=false in the writer's options, so
+    // without an explicit show the next setCharacter() renders pre-hidden and
+    // the preview never appears.
+    this.writer?.showCharacter();
+    this.autoHideTimerId = setTimeout(() => {
+      this.autoHideTimerId = undefined;
+      this.toggleShowHide = false;
+      this.writer?.hideCharacter();
+    }, AUTO_HIDE_DELAY_MS);
   }
 
   speak() {
@@ -279,6 +314,8 @@ export class TestModeComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   showHideCharacter() {
+    // A manual click wins over a pending auto-hide.
+    this.clearAutoHideTimer();
     this.toggleShowHide = !this.toggleShowHide;
     this.toggleShowHide ? this.writer.showCharacter() : this.writer.hideCharacter();
   }

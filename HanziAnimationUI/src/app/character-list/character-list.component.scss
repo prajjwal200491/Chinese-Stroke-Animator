@@ -1,3 +1,12 @@
+// In test mode the list must stay reachable while the page scrolls.
+.sticky-test-list{
+    position: sticky;
+    top: 0.5rem;
+    z-index: 10;
+}
+.custom-list.compact{
+    margin-top: 0;
+}
 .custom-list{
     margin-top: 1.5rem;
     &>.sticky-header{
