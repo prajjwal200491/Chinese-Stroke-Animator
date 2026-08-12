@@ -220,15 +220,15 @@ export const appReducer = createReducer(
         });
 
         updatedCard.selected = true;
+        // Spread the whole list so fields like isPublic/ownerId survive --
+        // enumerating fields here used to drop isPublic, emptying the
+        // Public/Private folder tabs after a character click.
         updatedListData[listName]={
-          listname: updatedListData[listName].listname,
-          //nameWithSpaces: updatedListData[listName].nameWithSpaces,
+          ...updatedListData[listName],
           values:{
             ...updatedListData[listName].values,
             [cardName]: updatedCard,
           },
-          listId: updatedListData[listName].listId,
-          isSelectedList: updatedListData[listName].isSelectedList
         }
     }
 
@@ -255,8 +255,7 @@ on(setAllListsInactiveOnSearch, (state: AppState): AppState=>{
               }));
               updatedCard.selected = false;
               updatedListData[lname] = {
-                listname: updatedListData[lname].listname,
-                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                ...updatedListData[lname],
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -302,10 +301,7 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             );
             //updatedCard.selected = false;
               updatedListData[lname] = {
-                listname: updatedListData[lname].listname,
-                listId: updatedListData[lname].listId,
-                isSelectedList: updatedListData[lname].isSelectedList,
-                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                ...updatedListData[lname],
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -319,10 +315,7 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
             }));
             updatedCard.selected = false;
               updatedListData[lname] = {
-                listname: updatedListData[lname].listname,
-                listId: updatedListData[lname].listId,
-                isSelectedList: updatedListData[lname].isSelectedList,
-                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                ...updatedListData[lname],
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,
@@ -345,10 +338,7 @@ on(setAllCardsInactive, (state: AppState, { listName, cardName, character }): Ap
               }));
               updatedCard.selected = false;
               updatedListData[lname] = {
-                listname: updatedListData[lname].listname,
-                listId: updatedListData[lname].listId,
-                isSelectedList: updatedListData[lname].isSelectedList,
-                //nameWithSpaces: updatedListData[lname].nameWithSpaces,
+                ...updatedListData[lname],
                 values: {
                   ...updatedListData[lname].values,
                   [cname]: updatedCard,

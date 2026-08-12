@@ -27,7 +27,11 @@ export interface ListData {
             [key: string] :List
         };
         isSelectedList?:boolean;
-        listId?:number
+        listId?:number;
+        // Returned by GET /api/lists and used by the folder Public/Private
+        // tabs -- reducers must preserve these when rebuilding a list.
+        isPublic?:boolean;
+        ownerId?:string|null;
     }
     // name: any;
     // values: List;
